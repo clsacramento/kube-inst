@@ -28,7 +28,7 @@ Dont continue if this doesnt work, fix it!
 ### Preconf
 This was not testd but should run like this:
 ~~~
-ansible-playbook -i hosts test.yml
+ansible-playbook -i hosts preconf.yml
 ~~~
 NB: if this does not work just configure the proxy on /etc/yum.conf on all hosts and run yum update
 
