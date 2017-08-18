@@ -2,12 +2,17 @@
 
 The playbooks are not integrated for a one command installation.
 
+These should be run on the master node:
+~~~
+git clone https://github.com/clsacramento/kube-inst
+cd kube-inst
+~~~
+
 ## Files to update with environment configuration
 
- * hosts: change ip and host names
- * ansible.cfg: change path to ssh_key to connect to all hosts
- * groupvars/all: adapt all variables to the environment
-
+ * ./hosts: change ip and host names
+ * ./ansible.cfg: change path to ssh_key to connect to all hosts
+ * ./groupvars/all: adapt all variables to the environment
 
 
 ## Steps to install:
