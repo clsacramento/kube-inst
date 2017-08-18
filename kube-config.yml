@@ -1,0 +1,9 @@
+---
+# Configures k8s nodes
+
+ - hosts: master
+   roles:
+    - role: master
+ - hosts: kubelets
+   roles:
+    - role: kubelets 

@@ -1,0 +1,6 @@
+---
+# Configures NTP for all nodes
+
+ - hosts: all
+   roles:
+   - role: ntp

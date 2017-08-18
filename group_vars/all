@@ -1,0 +1,4 @@
+ntp_servers: 172.16.1.5 
+proxy: http://proxy.sdc.hp.com:8080/
+yum_proxy: http://proxy.sdc.hp.com:3124/
+kube_master: kube-1

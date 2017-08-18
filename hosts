@@ -1,0 +1,30 @@
+[kube-1]
+kube-1 ansible_ssh_host=10.0.9.230
+
+[kube-2]
+kube-2 ansible_ssh_host=10.0.9.231
+
+[kube-3]
+kube-3 ansible_ssh_host=10.0.9.232
+
+[kube-4]
+kube-4 ansible_ssh_host=10.0.9.234
+
+[kube-5]
+kube-5 ansible_ssh_host=10.0.9.233
+
+[master]
+kube-1
+
+[kubelets]
+kube-2
+kube-3
+kube-4
+kube-5
+
+[kube]
+kube-1
+kube-2
+kube-3
+kube-4
+kube-5

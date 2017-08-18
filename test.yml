@@ -1,0 +1,11 @@
+---
+### Test connectivity to all hosts
+
+  - hosts: kube
+    tasks:
+      - name: uptime
+        shell: uptime ; date ; sleep 3
+        register: upr
+
+      - debug:
+          var : upr

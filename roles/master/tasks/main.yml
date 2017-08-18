@@ -1,0 +1,76 @@
+---
+# Master configuration
+
+ - name: kubernetes/config KUBE_MASTER
+   lineinfile:
+     path: /etc/kubernetes/config
+     regexp: '^KUBE_MASTER='
+     line: 'KUBE_MASTER="--master=http://{{ kube_master }}:8080"'
+   become: yes
+
+ - name: kubernetes/config KUBE_ETCD_SERVERS
+   lineinfile: 
+     path: /etc/kubernetes/config
+     regexp: '^KUBE_ETCD_SERVERS='
+     line: 'KUBE_ETCD_SERVERS="--etcd-servers=http://{{ kube_master }}:2379"'
+   become: yes
+
+ - name: /etc/etcd/etcd.conf ETCD_LISTEN_CLIENT_URLS
+   lineinfile:
+     path: /etc/etcd/etcd.conf
+     regexp: '^ETCD_LISTEN_CLIENT_URLS='
+     line: 'ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"'
+   become: yes
+
+ - name: /etc/etcd/etcd.conf ETCD_ADVERTISE_CLIENT_URLS
+   lineinfile:
+     path: /etc/etcd/etcd.conf
+     regexp: '^ETCD_ADVERTISE_CLIENT_URLS='
+     line: 'ETCD_ADVERTISE_CLIENT_URLS="http://0.0.0.0:2379"'
+   become: yes
+
+ - name: /etc/kubernetes/apiserver KUBE_API_ADDRESS
+   lineinfile:
+     path: /etc/kubernetes/apiserver
+     regexp: '^KUBE_API_ADDRESS='
+     line: 'KUBE_API_ADDRESS="--address=0.0.0.0"'
+   become: yes
+
+
+ - name: /etc/kubernetes/apiserver KUBE_API_PORT
+   lineinfile:
+     path: /etc/kubernetes/apiserver
+     regexp: 'KUBE_API_PORT='
+     line: 'KUBE_API_PORT="--port=8080"'
+   become: yes
+
+
+ - name: /etc/kubernetes/apiserver KUBELET_PORT
+   lineinfile:
+     path: /etc/kubernetes/apiserver
+     regexp: 'KUBELET_PORT='
+     line: 'KUBELET_PORT="--kubelet-port=10250"'
+   become: yes
+
+ - name: /etc/kubernetes/apiserver KUBE_ADMISSION_CONTROL
+   lineinfile:
+     path: /etc/kubernetes/apiserver
+     regexp: 'KUBE_ADMISSION_CONTROL='
+     line: '#KUBE_ADMISSION_CONTROL="--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota"'
+   become: yes
+
+ - name: Start and enable etcd
+   service: name=etcd state=started enabled=yes
+   become: yes
+
+ - name: Start and enable kube-apiserver
+   service: name=kube-apiserver state=started enabled=yes
+   become: yes
+
+ - name: Start and enable kube-controller-manager
+   service: name=kube-controller-manager state=started enabled=yes
+   become: yes
+
+ - name: Start and enable kube-scheduler
+   service: name=kube-scheduler state=started enabled=yes
+   become: yes

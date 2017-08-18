@@ -1,0 +1,74 @@
+---
+# Kublet/Nodes configuration
+
+ - name: kubernetes/config KUBE_MASTER
+   lineinfile:
+     path: /etc/kubernetes/config
+     regexp: '^KUBE_MASTER='
+     line: 'KUBE_MASTER="--master=http://{{ kube_master }}:8080"'
+   become: yes
+
+ - name: kubernetes/config KUBE_ETCD_SERVERS
+   lineinfile: 
+     path: /etc/kubernetes/config
+     regexp: '^KUBE_ETCD_SERVERS='
+     line: 'KUBE_ETCD_SERVERS="--etcd-servers=http://{{ kube_master }}:2379"'
+   become: yes
+
+ - name: /etc/kubernetes/kubelet
+   lineinfile:
+     path: /etc/kubernetes/kubelet
+     regexp: '^KUBELET_ADDRESS='
+     line: 'KUBELET_ADDRESS="--address=0.0.0.0"'
+   become: yes
+
+ - name: /etc/kubernetes/apiserver KUBELET_PORT
+   lineinfile:
+     path: /etc/kubernetes/kubelet
+     regexp: 'KUBELET_PORT='
+     line: 'KUBELET_PORT="--port=10250"'
+   become: yes
+
+ - name: /etc/kubernetes/apiserver KUBELET_HOSTNAME
+   lineinfile:
+     path: /etc/kubernetes/kubelet
+     regexp: '^KUBELET_HOSTNAME='
+     line: 'KUBELET_HOSTNAME="--hostname-override={{ inventory_hostname }}"'
+   become: yes
+
+ - name: /etc/kubernetes/apiserver KUBELET_API_SERVER
+   lineinfile:
+     path: /etc/kubernetes/kubelet
+     regexp: '^KUBELET_API_SERVER='
+     line: 'KUBELET_API_SERVER="--api-servers=http://{{ kube_master }}:8080"'
+   become: yes
+
+ - name: /etc/kubernetes/apiserver KUBELET_POD_INFRA_CONTAINER
+   lineinfile:
+     path: /etc/kubernetes/kubelet
+     regexp: 'KUBELET_POD_INFRA_CONTAINER='
+     line: '#KUBELET_POD_INFRA_CONTAINER="--pod-infra-container-image=registry.access.redhat.com/rhel7/pod-infrastructure:latest"'
+   become: yes
+
+ - name: Start and enable kube-proxy
+   service: name=kube-proxy state=started enabled=yes
+   become: yes
+
+ - name: Start and enable kubelet
+   service: name=kubelet state=started enabled=yes
+   become: yes
+
+ - name: Start and enable docker
+   service: name=docker state=started enabled=yes
+   become: yes
+
+
+ - name: create systemd docker.service
+   file: path=/etc/systemd/system/docker.service.d state=directory
+   become: yes
+
+ - name: configure docker proxy for image pull
+   template: src=./templates/http-proxy.conf.j2 dest=/etc/systemd/system/docker.service.d/http-proxy.conf
+   become: yes
+   notify:
+    - restart docker

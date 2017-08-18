@@ -1,0 +1,17 @@
+---
+##NB: I didnt test 'cause I did this part manually
+
+ - name: configure yum proxy
+   lineinfile:
+     path: /etc/yum.conf
+     regexp: '^proxy'
+     line: 'proxy={{ yum_proxy }}'
+   become: yes
+
+ - name: yum clean
+   shell: yum clean expire-cache
+   become: yes
+
+ - name: yum update
+   yum: name=* state=latest
+   become: yes   

@@ -1,0 +1,6 @@
+---
+# Sets up yum proxy and run yum update
+# NB: I didnt test 'cause did this part manually
+ - hosts: all
+   roles:
+   - role: preconf

@@ -1,0 +1,34 @@
+---
+# Installs and configure NTP
+#
+- name: Install NTP
+  yum: name=ntp state=installed
+  become: yes
+  tags: ntp
+
+- name: Remove default NTP Servers
+  replace:
+    path: /etc/ntp.conf
+    regexp: '^server .*'
+    replace: ''
+  become: yes
+
+- name: Add internal NTP server
+  lineinfile: 
+    path: /etc/ntp.conf
+    regexp: '^server '
+    insertafter: "^# Use public servers from the pool.ntp.org project."
+    line: "server {{ ntp_servers }}"
+  become: yes
+
+- name: Make sure NTP is stopped
+  service: name=ntpd state=stopped
+  become: yes
+
+- name: First NTP sync
+  shell: ntpdate {{ ntp_servers }}
+  become: yes
+
+- name: Make sure NTP is started up
+  service: name=ntpd state=started enabled=yes
+  become: yes
