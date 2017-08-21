@@ -56,7 +56,7 @@
    lineinfile:
      path: /etc/kubernetes/apiserver
      regexp: 'KUBE_ADMISSION_CONTROL='
-     line: '#KUBE_ADMISSION_CONTROL="--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota"'
+     line: 'KUBE_ADMISSION_CONTROL="--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,ServiceAccount,SecurityContextDeny,ResourceQuota"'
    become: yes
 
  - name: Start and enable etcd
