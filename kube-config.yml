@@ -4,6 +4,9 @@
  - hosts: master
    roles:
     - role: master
+ - hosts: kube
+   roles:
+    - role: flannel
  - hosts: kubelets
    roles:
     - role: kubelets 

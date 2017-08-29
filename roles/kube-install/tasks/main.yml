@@ -20,3 +20,8 @@
  - name: Install etcd package
    yum: name=etcd state=installed enablerepo=virt7-docker-common-release
    become: yes
+
+ - name: Install flannel package
+   yum: name=flannel state=installed enablerepo=virt7-docker-common-release
+   become: yes
+

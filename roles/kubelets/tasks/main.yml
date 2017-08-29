@@ -33,7 +33,7 @@
    lineinfile:
      path: /etc/kubernetes/kubelet
      regexp: '^KUBELET_HOSTNAME='
-     line: 'KUBELET_HOSTNAME="--hostname-override={{ inventory_hostname }}"'
+     line: 'KUBELET_HOSTNAME="--hostname-override={{ hostvars[inventory_hostname].ansible_ssh_host }}"'
    become: yes
 
  - name: /etc/kubernetes/apiserver KUBELET_API_SERVER
@@ -50,12 +50,19 @@
      line: '#KUBELET_POD_INFRA_CONTAINER="--pod-infra-container-image=registry.access.redhat.com/rhel7/pod-infrastructure:latest"'
    become: yes
 
+ - name: /etc/kubernetes/apiserver KUBELET_ARGS
+   lineinfile:
+     path: /etc/kubernetes/kubelet
+     regexp: 'KUBELET_ARGS='
+     line: 'KUBELET_ARGS="--cluster-dns=10.254.3.100 --cluster-domain=cluster.local"'
+   become: yes
+
  - name: Start and enable kube-proxy
    service: name=kube-proxy state=started enabled=yes
    become: yes
 
  - name: Start and enable kubelet
-   service: name=kubelet state=started enabled=yes
+   service: name=kubelet state=restarted enabled=yes
    become: yes
 
  - name: Start and enable docker

@@ -1,4 +1,5 @@
 ntp_servers: 172.16.1.5 
 proxy: http://proxy.sdc.hp.com:8080/
 yum_proxy: http://172.16.1.5:3142/
-kube_master: kube-1
+kube_master: centos7kube-master
+etcd_prefix: /kube-centos/network

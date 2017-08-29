@@ -20,6 +20,14 @@
    template: src=./templates/sysctl.conf.j2 dest=/etc/sysctl.d/kubernetes.conf
    become: yes
 
+ - name: disable selinux/setenforce 0
+   selinux: state=disabled
+   become: yes
+
+ - name: disable firewalld
+   service: name=firewalld state=stopped enabled=no
+   become: yes
+
 # - name: modprobe bridge netfilter
 #   modprobe: name=br_netfilter state=present
 

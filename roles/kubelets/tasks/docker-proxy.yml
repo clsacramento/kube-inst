@@ -1,0 +1,14 @@
+---
+# Kublet/Nodes docker proxy setup
+
+ - name: create systemd docker.service
+   file: path=/etc/systemd/system/docker.service.d state=directory
+   become: yes
+
+ - name: configure docker proxy for image pull
+   template: src=../templates/http-proxy.conf.j2 dest=/etc/systemd/system/docker.service.d/http-proxy.conf
+   become: yes
+
+ - name: restart docker
+   service: name=docker state=restarted daemon_reload=yes
+   become: yes

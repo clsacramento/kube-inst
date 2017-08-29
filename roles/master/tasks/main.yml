@@ -44,7 +44,6 @@
      line: 'KUBE_API_PORT="--port=8080"'
    become: yes
 
-
  - name: /etc/kubernetes/apiserver KUBELET_PORT
    lineinfile:
      path: /etc/kubernetes/apiserver
@@ -52,15 +51,61 @@
      line: 'KUBELET_PORT="--kubelet-port=10250"'
    become: yes
 
+ - name: /etc/kubernetes/apiserver KUBE_SERVICE_ADDRESSES
+   lineinfile:
+     path: /etc/kubernetes/apiserver
+     regexp: 'KUBE_SERVICE_ADDRESSES='
+     line: 'KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range={{ service_cluster_ip_range }}"'
+   become: yes
+
  - name: /etc/kubernetes/apiserver KUBE_ADMISSION_CONTROL
    lineinfile:
      path: /etc/kubernetes/apiserver
      regexp: 'KUBE_ADMISSION_CONTROL='
-     line: 'KUBE_ADMISSION_CONTROL="--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,ServiceAccount,SecurityContextDeny,ResourceQuota"'
+     line: 'KUBE_ADMISSION_CONTROL="--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota"'
+   become: yes
+
+ - name: /etc/kubernetes/apiserver KUBE_API_ARGS
+   lineinfile:
+     path: /etc/kubernetes/apiserver
+     regexp: 'KUBE_API_ARGS='
+     line: 'KUBE_API_ARGS="--client-ca-file={{ cert_dir }}/ca.crt --tls-cert-file={{ cert_dir }}/server.cert --tls-private-key-file={{ cert_dir }}/server.key"'
+   become: yes
+
+ - name: /etc/kubernetes/controller-manager KUBE_CONTROLLER_MANAGER_ARGS
+   lineinfile:
+     path: /etc/kubernetes/controller-manager
+     regexp: 'KUBE_CONTROLLER_MANAGER_ARGS='
+     line: 'KUBE_CONTROLLER_MANAGER_ARGS="--root-ca-file={{ cert_dir }}/ca.crt --service-account-private-key-file={{ cert_dir }}/server.key"'
+   become: yes
+
+ - name: add config cert script
+   template: src=./templates/make-ca-cert.sh dest=/tmp/make-ca-cert.sh mode=755
+   become: yes
+
+ - name: copy easy-rsa for cert generation
+   copy: src=./files/easy-rsa.tar.gz dest=/tmp/easy-rsa.tar.gz
+   become: yes
+
+ - name: test args
+   debug: msg='"{{ hostvars[kube_master].ansible_ssh_host }}" "IP:{{ hostvars[kube_master].ansible_ssh_host }},IP:10.254.0.1"'
+
+ - name: generate k8s certificates
+   command: bash /tmp/make-ca-cert.sh "{{ hostvars[kube_master].ansible_ssh_host }}" "IP:{{ hostvars[kube_master].ansible_ssh_host }},IP:10.254.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local"
+   args:
+     creates: "{{ cert_dir }}"
    become: yes
 
  - name: Start and enable etcd
    service: name=etcd state=started enabled=yes
+   become: yes
+
+ - name: add network-config etcd script
+   template: src=./templates/etcd-network-config.sh dest=/tmp/etcd-network-config.sh mode=755
+   become: yes
+
+ - name: set network/config in etcd
+   command: bash /tmp/etcd-network-config.sh
    become: yes
 
  - name: Start and enable kube-apiserver
@@ -74,3 +119,4 @@
  - name: Start and enable kube-scheduler
    service: name=kube-scheduler state=started enabled=yes
    become: yes
+

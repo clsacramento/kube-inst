@@ -1,30 +1,20 @@
-[kube-1]
-kube-1 ansible_ssh_host=10.0.9.230
+[centos7kube-1]
+centos7kube-1 ansible_ssh_host=192.168.122.44
 
-[kube-2]
-kube-2 ansible_ssh_host=10.0.9.231
+[centos7kube-2]
+centos7kube-2 ansible_ssh_host=192.168.122.145
 
-[kube-3]
-kube-3 ansible_ssh_host=10.0.9.232
-
-[kube-4]
-kube-4 ansible_ssh_host=10.0.9.234
-
-[kube-5]
-kube-5 ansible_ssh_host=10.0.9.233
+[centos7kube-master]
+centos7kube-master ansible_ssh_host=192.168.122.19
 
 [master]
-kube-1
+centos7kube-master
 
 [kubelets]
-kube-2
-kube-3
-kube-4
-kube-5
+centos7kube-1
+centos7kube-2
 
 [kube]
-kube-1
-kube-2
-kube-3
-kube-4
-kube-5
+centos7kube-master
+centos7kube-1
+centos7kube-2
