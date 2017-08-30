@@ -32,11 +32,6 @@ ansible-playbook -i hosts preconf.yml
 ~~~
 NB: if this does not work just configure the proxy on /etc/yum.conf on all hosts and run yum update
 
-### Install and configure NTP
-~~~
-ansible-playbook -i hosts ntp.yml
-~~~
-
 ### Generate an /etc/hosts file and place it on all hosts
 ~~~
 ansible-playbook -i hosts etc-hosts.yml
@@ -85,7 +80,7 @@ KUBELET_ARGS="--cluster-dns=10.254.3.100 --cluster-domain=cluster.local"
 ~~~
 kubectl create -f Dashboard/dashboard-controller.yaml
 kubectl create -f Dashboard/dashboard-service.yaml   
-kubectl create -f cluster-monitoring/influx
+kubectl create -f cluster-monitoring/influxdb
 ~~~
 
 
