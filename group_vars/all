@@ -3,3 +3,4 @@ proxy: http://proxy.sdc.hp.com:8080/
 yum_proxy: http://172.16.1.5:3142/
 kube_master: centos7kube-master
 etcd_prefix: /kube-centos/network
+flannel_cidr: 172.30.0.0/16

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z $1 ] ; then 
-	FLANNEL_CIDR=172.30.0.0/16
+	FLANNEL_CIDR={{ flannel_cidr }}
 else 
 	FLANNEL_CIDR=$1
 fi
