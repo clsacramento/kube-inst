@@ -1,0 +1,50 @@
+---
+# Deploys DNS, Dashboard and Heapster/Granfa/Influxdb addons
+
+ - name: copy skydns-rc template
+   template: src=./templates/skydns-rc.yaml dest=/tmp/skydns-rc.yaml
+   become: yes
+
+ - name: copy skydns-svc template
+   template: src=./templates/skydns-svc.yaml dest=/tmp/skydns-svc.yaml
+
+ - name: deploy skydns templates
+   shell: "kubectl apply -f /tmp/skydns-rc.yaml && kubectl apply -f /tmp/skydns-svc.yaml"
+
+ - name: get all pods
+   command: "kubectl get pods --all-namespaces"
+   register: allpods
+
+ - name: show all pods
+   debug: var=allpods
+
+ - name: wait for skydns deployment
+   shell: "while ! kubectl get pods --all-namespaces | grep kube-dns | grep -iq running; do sleep 5; done"
+
+ - name: copy dashboard yamls
+   copy: src=./files/dashboard dest=/tmp/.
+
+ - name: deploy dashboard yamls
+   shell: "kubectl apply -f /tmp/dashboard/dashboard-controller.yaml && kubectl apply -f /tmp/dashboard/dashboard-service.yaml"
+
+ - name: wait for dashboard pods
+   shell: "while ! kubectl get pods --all-namespaces | grep dashboard | grep -iq running; do sleep 5; done"
+
+ - name: copy influx yamls
+   copy: src=./files/influxdb dest=/tmp/.
+
+ - name: deploy influx pods
+   shell: "kubectl apply -f /tmp/influxdb"
+
+ - name: wait for monitoring pods
+   shell: "while ! kubectl get pods --all-namespaces | grep grafana | grep -iq running; do sleep 5; done"
+
+ - name: get cluster info
+   command: "kubectl cluster-info"
+   register: clusterinfo
+
+ - name: show cluster info
+   debug: msg="{{ item  }}"
+   with_items: 
+     - "{{ clusterinfo.stdout_lines }}"
+

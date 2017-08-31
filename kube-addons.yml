@@ -1,0 +1,6 @@
+---
+# Configures k8s nodes
+
+ - hosts: master
+   roles:
+    - role: addons
