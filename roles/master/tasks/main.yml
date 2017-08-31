@@ -15,6 +15,13 @@
      line: 'KUBE_ETCD_SERVERS="--etcd-servers=http://{{ groups.master[0] }}:2379"'
    become: yes
 
+ - name: /etc/etcd/etcd.conf ETCD_NAME
+   lineinfile:
+     path: /etc/etcd/etcd.conf
+     regexp: '^ETCD_NAME='
+     line: 'ETCD_NAME="{{ inventory_hostname }}"'
+   become: yes
+
  - name: /etc/etcd/etcd.conf ETCD_LISTEN_CLIENT_URLS
    lineinfile:
      path: /etc/etcd/etcd.conf
