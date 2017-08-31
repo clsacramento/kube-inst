@@ -5,14 +5,14 @@
    lineinfile:
      path: /etc/kubernetes/config
      regexp: '^KUBE_MASTER='
-     line: 'KUBE_MASTER="--master=http://{{ kube_master }}:8080"'
+     line: 'KUBE_MASTER="--master=http://{{ groups.master[0] }}:8080"'
    become: yes
 
  - name: kubernetes/config KUBE_ETCD_SERVERS
    lineinfile: 
      path: /etc/kubernetes/config
      regexp: '^KUBE_ETCD_SERVERS='
-     line: 'KUBE_ETCD_SERVERS="--etcd-servers=http://{{ kube_master }}:2379"'
+     line: 'KUBE_ETCD_SERVERS="--etcd-servers=http://{{ groups.master[0] }}:2379"'
    become: yes
 
  - name: /etc/kubernetes/kubelet
@@ -33,14 +33,14 @@
    lineinfile:
      path: /etc/kubernetes/kubelet
      regexp: '^KUBELET_HOSTNAME='
-     line: 'KUBELET_HOSTNAME="--hostname-override={{ hostvars[inventory_hostname].ansible_ssh_host }}"'
+     line: 'KUBELET_HOSTNAME="--hostname-override={{ inventory_hostname }}"'
    become: yes
 
  - name: /etc/kubernetes/apiserver KUBELET_API_SERVER
    lineinfile:
      path: /etc/kubernetes/kubelet
      regexp: '^KUBELET_API_SERVER='
-     line: 'KUBELET_API_SERVER="--api-servers=http://{{ kube_master }}:8080"'
+     line: 'KUBELET_API_SERVER="--api-servers=http://{{ groups.master[0] }}:8080"'
    become: yes
 
  - name: /etc/kubernetes/apiserver KUBELET_POD_INFRA_CONTAINER
@@ -54,7 +54,7 @@
    lineinfile:
      path: /etc/kubernetes/kubelet
      regexp: 'KUBELET_ARGS='
-     line: 'KUBELET_ARGS="--cluster-dns=10.254.3.100 --cluster-domain=cluster.local"'
+     line: 'KUBELET_ARGS="--cluster-dns={{ cluster_dns }} --cluster-domain={{ cluster_domain }}"'
    become: yes
 
  - name: Start and enable kube-proxy

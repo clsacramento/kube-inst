@@ -30,12 +30,7 @@ This was not testd but should run like this:
 ~~~
 ansible-playbook -i hosts preconf.yml
 ~~~
-NB: if this does not work just configure the proxy on /etc/yum.conf on all hosts and run yum update
-
-### Generate an /etc/hosts file and place it on all hosts
-~~~
-ansible-playbook -i hosts etc-hosts.yml
-~~~
+NB: if this does not work check the proxy on /etc/yum.conf on all hosts and run yum update
 
 ### Install kubernetes, etcd and docker packages on all hosts
 ~~~

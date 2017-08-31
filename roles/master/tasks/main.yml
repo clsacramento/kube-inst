@@ -5,14 +5,14 @@
    lineinfile:
      path: /etc/kubernetes/config
      regexp: '^KUBE_MASTER='
-     line: 'KUBE_MASTER="--master=http://{{ kube_master }}:8080"'
+     line: 'KUBE_MASTER="--master=http://{{ groups.master[0] }}:8080"'
    become: yes
 
  - name: kubernetes/config KUBE_ETCD_SERVERS
    lineinfile: 
      path: /etc/kubernetes/config
      regexp: '^KUBE_ETCD_SERVERS='
-     line: 'KUBE_ETCD_SERVERS="--etcd-servers=http://{{ kube_master }}:2379"'
+     line: 'KUBE_ETCD_SERVERS="--etcd-servers=http://{{ groups.master[0] }}:2379"'
    become: yes
 
  - name: /etc/etcd/etcd.conf ETCD_LISTEN_CLIENT_URLS
@@ -88,12 +88,16 @@
    become: yes
 
  - name: test args
-   debug: msg='"{{ hostvars[kube_master].ansible_ssh_host }}" "IP:{{ hostvars[kube_master].ansible_ssh_host }},IP:10.254.0.1"'
+   debug: msg='"{{ hostvars[item].ansible_ssh_host }}" "IP:{{ hostvars[item].ansible_ssh_host }},IP:10.254.0.1"'
+   with_items:
+     - "{{ groups.master[0] }}"
 
  - name: generate k8s certificates
-   command: bash /tmp/make-ca-cert.sh "{{ hostvars[kube_master].ansible_ssh_host }}" "IP:{{ hostvars[kube_master].ansible_ssh_host }},IP:10.254.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local"
+   command: bash /tmp/make-ca-cert.sh "{{ hostvars[item].ansible_ssh_host }}" "IP:{{ hostvars[item].ansible_ssh_host }},IP:10.254.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local"
    args:
      creates: "{{ cert_dir }}"
+   with_items:
+     - "{{ groups.master[0] }}"
    become: yes
 
  - name: Start and enable etcd

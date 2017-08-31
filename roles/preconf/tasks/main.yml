@@ -16,7 +16,7 @@
    yum: name=* state=latest
    become: yes   
 
- - name: configure docker proxy for image pull
+ - name: configure ip forwarding
    template: src=./templates/sysctl.conf.j2 dest=/etc/sysctl.d/kubernetes.conf
    become: yes
 
@@ -24,9 +24,14 @@
    selinux: state=disabled
    become: yes
 
+ - name: check if firewalld is installed
+   shell: "if systemctl status firewalld | grep -q loaded; then echo true; else echo false ; fi;"
+   register: firewalld_installed
+
  - name: disable firewalld
    service: name=firewalld state=stopped enabled=no
    become: yes
+   when: "firewalld_installed == true"
 
 # - name: modprobe bridge netfilter
 #   modprobe: name=br_netfilter state=present

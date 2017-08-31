@@ -5,7 +5,7 @@
    lineinfile:
      path: /etc/sysconfig/flanneld
      regexp: '^FLANNEL_ETCD_ENDPOINTS='
-     line: 'FLANNEL_ETCD_ENDPOINTS="http://{{ kube_master }}:2379"'
+     line: 'FLANNEL_ETCD_ENDPOINTS="http://{{ groups.master[0] }}:2379"'
    become: yes
 
  - name: /etc/sysconfig/flanneld FLANNEL_ETCD_PREFIX
