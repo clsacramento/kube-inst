@@ -55,6 +55,15 @@ $ kubectl delete deployment hello-web
 
 ## Complimentary configuration
 
+Here we will deploy some addons services, such as, the DNS and the Dashboard that will complute the k8s installation.
+
+### Run the playbook:
+~~~
+ansible-playbook -i hosts kube-addons.yml
+~~~
+
+### Or follow the steps manually:
+
 On the master download some yaml to deploy the DNS, the Dashboard and Grafana for monitoring.
 
 ~~~
