@@ -8,13 +8,6 @@
      line: 'KUBE_MASTER="--master=http://{{ groups.master[0] }}:8080"'
    become: yes
 
- - name: kubernetes/config KUBE_ETCD_SERVERS
-   lineinfile: 
-     path: /etc/kubernetes/config
-     regexp: '^KUBE_ETCD_SERVERS='
-     line: 'KUBE_ETCD_SERVERS="--etcd-servers=http://{{ groups.master[0] }}:2379"'
-   become: yes
-
  - name: /etc/etcd/etcd.conf ETCD_NAME
    lineinfile:
      path: /etc/etcd/etcd.conf
@@ -56,6 +49,13 @@
      path: /etc/kubernetes/apiserver
      regexp: 'KUBELET_PORT='
      line: 'KUBELET_PORT="--kubelet-port=10250"'
+   become: yes
+   
+ - name: /etc/kubernetes/apiserver KUBE_ETCD_SERVERS
+   lineinfile: 
+     path: /etc/kubernetes/apiserver
+     regexp: '^KUBE_ETCD_SERVERS='
+     line: 'KUBE_ETCD_SERVERS="--etcd-servers=http://{{ inventory_hostname }}:2379"'
    become: yes
 
  - name: /etc/kubernetes/apiserver KUBE_SERVICE_ADDRESSES
