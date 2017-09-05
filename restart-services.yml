@@ -1,0 +1,9 @@
+---
+# Restarts k8s services
+
+ - hosts: master
+   roles:
+    - role: master_services
+ - hosts: kubelets
+   roles:
+    - role: nodes_services

@@ -1,0 +1,30 @@
+---
+# Master services
+
+ - name: KUBE-PROXY
+   systemd:
+     name: kube-proxy
+     enabled: yes
+     state: restarted
+   become: yes
+
+ - name: KUBELET
+   systemd:
+     name: kubelet
+     enabled: yes
+     state: restarted
+   become: yes
+
+ - name: FLANNELD
+   systemd:
+     name: flanneld
+     enabled: yes
+     state: restarted
+   become: yes
+
+ - name: DOCKER
+   systemd:
+     name: docker
+     enabled: yes
+     state: restarted
+   become: yes

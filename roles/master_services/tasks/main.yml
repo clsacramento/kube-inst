@@ -1,0 +1,37 @@
+---
+# Master services
+
+ - name: ETCD
+   systemd:
+     name: etcd
+     enabled: yes
+     state: restarted
+   become: yes
+
+ - name: KUBE-APISERVER
+   systemd:
+     name: kube-apiserver
+     enabled: yes
+     state: restarted
+   become: yes
+
+ - name: KUBE-CONTROLLER-MANAGER
+   systemd:
+     name: kube-controller-manager
+     enabled: yes
+     state: restarted
+   become: yes
+
+ - name: KUBE-SCHEDULER
+   systemd:
+     name: kube-scheduler
+     enabled: yes
+     state: restarted
+   become: yes
+
+ - name: FLANNELD
+   systemd:
+     name: flanneld
+     enabled: yes
+     state: restarted
+   become: yes
