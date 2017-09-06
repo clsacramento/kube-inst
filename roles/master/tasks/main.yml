@@ -1,6 +1,27 @@
 ---
 # Master configuration
 
+ - name: kubernetes/config KUBE_LOGTOSTDERR
+   lineinfile:
+     path: /etc/kubernetes/config
+     regexp: '^KUBE_LOGTOSTDERR='
+     line: 'KUBE_LOGTOSTDERR="--logtostderr=true"'
+   become: yes
+
+ - name: kubernetes/config KUBE_LOG_LEVEL
+   lineinfile:
+     path: /etc/kubernetes/config
+     regexp: '^KUBE_LOG_LEVEL='
+     line: 'KUBE_LOG_LEVEL="--v=0"'
+   become: yes
+
+ - name: kubernetes/config KUBE_ALLOW_PRIV
+   lineinfile:
+     path: /etc/kubernetes/config
+     regexp: '^KUBE_ALLOW_PRIV='
+     line: 'KUBE_ALLOW_PRIV="--allow-privileged=true"'
+   become: yes
+
  - name: kubernetes/config KUBE_MASTER
    lineinfile:
      path: /etc/kubernetes/config
