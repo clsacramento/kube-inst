@@ -50,6 +50,7 @@ $ docker run -p 4000:80 firstapp
 ```
 $ docker run -d -p 4000:80 firstapp
 916452e97dc497c7885ff9c6babb43b71a437898d2fbe415e429e9d1ce09c2c4
+```
 
 ## List and stop containers
 ```
