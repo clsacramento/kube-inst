@@ -61,3 +61,39 @@ CONTAINER ID        IMAGE               COMMAND             CRE
 $ docker stop 916452e97dc4
 916452e97dc4
 ```
+
+# Publish the image
+
+## Login on docker
+```
+$ docker login
+Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+Username: 
+Password: 
+Login Succeeded
+```
+
+## Tag image with the docker username
+```
+# NB: replace username by your Docker ID
+$ docker tag firstapp username/firstapp:part1
+
+$ docker image ls
+REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
+username/firstapp       part1               5c4528f3de21        42 minutes ago      194MB
+firstapp 
+```
+
+## Push the image
+```
+$ docker push username/firstapp:part1
+The push refers to a repository [docker.io/username/firstapp]
+e97e5ac773e4: Pushed 
+14e581b1f7a4: Pushed 
+64bbac6fc667: Pushed 
+735a46068813: Mounted from library/python 
+2323e4886d1c: Mounted from library/python 
+3dd73719e600: Mounted from library/python 
+2c40c66f7667: Mounted from library/python 
+part1: digest: sha256:5f2b71495fe5a47f67d6cc39f80375dda5f47c48ee847fa21c5cfa64b72567d4 size: 1787
+```
