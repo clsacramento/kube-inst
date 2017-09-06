@@ -12,6 +12,7 @@
     regexp: '^server .*'
     replace: ''
   become: yes
+  when: ntp_servers is defined
 
 - name: Add internal NTP server
   lineinfile: 
@@ -20,6 +21,7 @@
     insertafter: "^# Use public servers from the pool.ntp.org project."
     line: "server {{ ntp_servers }}"
   become: yes
+  when: ntp_servers is defined
 
 - name: Make sure NTP is stopped
   service: name=ntpd state=stopped
@@ -28,6 +30,12 @@
 - name: First NTP sync
   shell: ntpdate {{ ntp_servers }}
   become: yes
+  when: ntp_servers is defined
+
+- name: First NTP sync with default pool
+  shell: ntpdate pool.ntp.org
+  become: yes
+  when: ntp_servers is not defined
 
 - name: Make sure NTP is started up
   service: name=ntpd state=started enabled=yes
