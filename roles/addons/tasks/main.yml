@@ -67,7 +67,7 @@
    shell: "kubectl apply -f /tmp/guestbook.yaml"
 
  - name: wait for guestbook deployment
-   shell: "while ! kubectl get pods --all-namespaces | grep guestbook | grep -iq running; do sleep 5; done"
+   shell: "while ! kubectl get pods --all-namespaces | grep frontend | grep -iq running; do sleep 5; done"
 
  - name: get cluster info
    command: "kubectl cluster-info"
