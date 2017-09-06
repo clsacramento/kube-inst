@@ -59,6 +59,16 @@
  - name: wait for registry deployment
    shell: "while ! kubectl get pods --all-namespaces | grep registry | grep -iq running; do sleep 5; done"
 
+ - name: copy guestbook template
+   template: src=./templates/guestbook.yaml dest=/tmp/guestbook.yaml
+   become: yes
+
+ - name: deploy guestbook template
+   shell: "kubectl apply -f /tmp/guestbook.yaml"
+
+ - name: wait for guestbook deployment
+   shell: "while ! kubectl get pods --all-namespaces | grep guestbook | grep -iq running; do sleep 5; done"
+
  - name: get cluster info
    command: "kubectl cluster-info"
    register: clusterinfo
