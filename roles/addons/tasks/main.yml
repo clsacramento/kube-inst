@@ -39,6 +39,26 @@
  - name: wait for monitoring pods
    shell: "while ! kubectl get pods --all-namespaces | grep grafana | grep -iq running; do sleep 5; done"
 
+ - name: copy jenkins template
+   template: src=./templates/jenkins.yaml dest=/tmp/jenkins.yaml
+   become: yes
+
+ - name: deploy jenkins template
+   shell: "kubectl apply -f /tmp/jenkins.yaml"
+
+ - name: wait for jenkins deployment
+   shell: "while ! kubectl get pods --all-namespaces | grep jenkins | grep -iq running; do sleep 5; done"
+
+ - name: copy registry template
+   template: src=./templates/registry.yaml dest=/tmp/registry.yaml
+   become: yes
+
+ - name: deploy registry template
+   shell: "kubectl apply -f /tmp/registry.yaml"
+
+ - name: wait for registry deployment
+   shell: "while ! kubectl get pods --all-namespaces | grep registry | grep -iq running; do sleep 5; done"
+
  - name: get cluster info
    command: "kubectl cluster-info"
    register: clusterinfo
