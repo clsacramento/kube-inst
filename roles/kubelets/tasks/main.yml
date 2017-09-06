@@ -79,17 +79,16 @@
    become: yes
 
  - name: Start and enable kube-proxy
-   service: name=kube-proxy state=started enabled=yes
+   systemd: name=kube-proxy state=started enabled=yes
    become: yes
 
  - name: Start and enable kubelet
-   service: name=kubelet state=restarted enabled=yes
+   systemd: name=kubelet state=restarted enabled=yes
    become: yes
 
  - name: Start and enable docker
-   service: name=docker state=started enabled=yes
+   systemd: name=docker state=started enabled=yes
    become: yes
-
 
  - name: create systemd docker.service
    file: path=/etc/systemd/system/docker.service.d state=directory
