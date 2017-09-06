@@ -1,3 +1,6 @@
+[local]
+localhost ansible_connection=local
+
 [k8s-1]
 k8s-1 ansible_ssh_host=10.30.20.14
 

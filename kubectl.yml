@@ -1,0 +1,9 @@
+---
+# Configures k8s nodes
+
+ - hosts: local
+   roles: 
+   - role: kubectl
+ - hosts: master
+   tasks:
+    - include: roles/master/tasks/get-kubeconfig.yml

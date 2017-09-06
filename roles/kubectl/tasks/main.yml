@@ -1,0 +1,14 @@
+---
+# Installs and configure NTP
+#
+ - name: Install kubectl
+   yum: name=kubernetes-client state=installed
+   become: yes
+
+ - name: Create .kube dir
+   file: path={{ ansible_env.HOME }} state=directory
+   become: yes
+
+ - name: Create kubernets pki dir
+   file: path=/etc/kubernetes/pki state=directory
+   become: yes
