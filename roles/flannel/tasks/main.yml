@@ -16,6 +16,6 @@
    become: yes
 
  - name: Start and enable flanneld
-   service: name=flanneld state=started enabled=yes
+   systemd: name=flanneld state=started enabled=yes
    become: yes
 

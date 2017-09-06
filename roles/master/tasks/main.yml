@@ -136,7 +136,7 @@
    become: yes
 
  - name: Start and enable etcd
-   service: name=etcd state=started enabled=yes
+   systemd: name=etcd state=started enabled=yes
    become: yes
 
  - name: add network-config etcd script
@@ -148,14 +148,14 @@
    become: yes
 
  - name: Start and enable kube-apiserver
-   service: name=kube-apiserver state=started enabled=yes
+   systemd: name=kube-apiserver state=started enabled=yes
    become: yes
 
  - name: Start and enable kube-controller-manager
-   service: name=kube-controller-manager state=started enabled=yes
+   systemd: name=kube-controller-manager state=started enabled=yes
    become: yes
 
  - name: Start and enable kube-scheduler
-   service: name=kube-scheduler state=started enabled=yes
+   systemd: name=kube-scheduler state=started enabled=yes
    become: yes
 
