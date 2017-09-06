@@ -1,0 +1,13 @@
+apiVersion: v1
+data:
+  redis-config: |
+    maxmemory 5mb
+    maxmemory-policy allkeys-lru
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2017-09-05T16:03:42Z
+  name: example-redis-config
+  namespace: default
+  resourceVersion: "587634"
+  selfLink: /api/v1/namespaces/default/configmaps/example-redis-config
+  uid: c9ff9780-9253-11e7-9a92-fa163e6c5fea
