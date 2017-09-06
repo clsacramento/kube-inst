@@ -36,6 +36,13 @@
      line: 'ETCD_NAME="{{ inventory_hostname }}"'
    become: yes
 
+ - name: /etc/etcd/etcd.conf ETCD_DATA_DIR
+   lineinfile:
+     path: /etc/etcd/etcd.conf
+     regexp: '^ETCD_DATA_DIR='
+     line: 'ETCD_DATA_DIR="/var/lib/etcd/default.etcd"'
+   become: yes
+
  - name: /etc/etcd/etcd.conf ETCD_LISTEN_CLIENT_URLS
    lineinfile:
      path: /etc/etcd/etcd.conf
