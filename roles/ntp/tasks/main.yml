@@ -33,7 +33,7 @@
   when: ntp_servers is defined
 
 - name: First NTP sync with default pool
-  shell: ntpdate pool.ntp.org
+  shell: ntpdate 0.ie.pool.ntp.org
   become: yes
   when: ntp_servers is not defined
 
