@@ -7,6 +7,7 @@
      regexp: '^proxy='
      line: 'proxy={{ yum_proxy }}'
    become: yes
+   when: yum_proxy is defined
 
  - name: yum clean
    shell: yum clean expire-cache
