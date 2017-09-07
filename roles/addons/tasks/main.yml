@@ -79,11 +79,11 @@
      - "{{ clusterinfo.stdout_lines }}"
 
  - name: get jenkins password
-   shell: "kubectl exec -it $(kubectl get pods --selector=app=jenkins --output=jsonpath={.items..metadata.name}) -- cat /root/.jenkins/secrets/initialAdminPassword"
+   shell: "kubectl exec $(kubectl get pods --selector=app=jenkins --output=jsonpath={.items..metadata.name}) -- cat /root/.jenkins/secrets/initialAdminPassword"
    register: jenkins_password
 
  - name: show jenkins password
-   debug: var=jenkins_password
+   debug: var=jenkins_password.stdout
 
  - name: save jenkins password
-   local_action: copy content={{ jenkins_password }} dest=~/jenkins_password
+   local_action: copy content={{ jenkins_password.stdout }} dest=~/jenkins_password
