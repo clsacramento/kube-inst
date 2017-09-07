@@ -10,9 +10,9 @@ cd kube-inst
 
 ## Files to update with environment configuration
 
- * ./hosts: change ip and host names
- * ./ansible.cfg: change path to ssh_key to connect to all hosts
- * ./groupvars/all: adapt all variables to the environment
+ * Rename ./hosts.example to ./hosts: change ip and host names
+ * Rename ./ansible.cfg.example to ./ansible.cfg: change path to ssh_key to connect to all hosts
+ * Rename ./groupvars/all.example to ./groupvars/all: adapt all variables to the environment
 
 
 ## Steps to install:
