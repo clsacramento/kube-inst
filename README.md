@@ -17,6 +17,14 @@ cd kube-inst
 
 ## Steps to install:
 
+### All in one
+
+~~~
+ansible-playbook -i hosts kube-deploy.yml
+~~~
+
+Or just run each playbook one at a time
+
 ### Check if ansible is able to access all hosts:
 
 ~~~
