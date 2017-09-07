@@ -1,10 +1,7 @@
 ---
-# get .kube/config from master
+# get certificates from master
  - name: test
    debug: var=ansible_env.HOME
-
- - name: Get .kube/config
-   fetch: src={{ ansible_env.HOME }}/.kube/config dest={{ ansible_env.HOME }}/.kube/config flat=yes
 
  - name: Get kubernetes kubecfg.crt
    fetch: src=/etc/kubernetes/pki/kubecfg.crt dest=/tmp/kubecfg.crt flat=yes
