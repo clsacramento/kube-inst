@@ -11,12 +11,12 @@
  - name: deploy skydns templates
    shell: "kubectl apply -f /tmp/skydns-rc.yaml && kubectl apply -f /tmp/skydns-svc.yaml"
 
- - name: get all pods
-   command: "kubectl get pods --all-namespaces"
-   register: allpods
+ - name: get nodes
+   command: "kubectl get nodes"
+   register: nodes
 
- - name: show all pods
-   debug: var=allpods
+ - name: show nodes
+   debug: var=nodes
 
  - name: wait for skydns deployment
    shell: "while ! kubectl get pods --all-namespaces | grep kube-dns | grep -iq running; do sleep 5; done"
@@ -74,7 +74,7 @@
    register: clusterinfo
 
  - name: show cluster info
-   debug: msg="{{ item  }}"
+   debug: msg="{{ item }}"
    with_items: 
      - "{{ clusterinfo.stdout_lines }}"
 
