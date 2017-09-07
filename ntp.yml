@@ -1,6 +1,6 @@
 ---
 # Configures NTP for all nodes
 
- - hosts: all
+ - hosts: kube
    roles:
    - role: ntp
