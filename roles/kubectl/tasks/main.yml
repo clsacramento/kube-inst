@@ -6,9 +6,20 @@
    become: yes
 
  - name: Create .kube dir
-   file: path={{ ansible_env.HOME }} state=directory
-   become: yes
+   file: path={{ ansible_env.HOME }}/.kube state=directory
 
  - name: Create kubernets pki dir
    file: path=/etc/kubernetes/pki state=directory
    become: yes
+
+ - name: Configure .kube/config
+   shell: "{{ item }}"
+   with_items:
+   - kubectl config set-cluster default-cluster --server=https://{{ hostvars[groups.master[0]].ansible_ssh_host }}:6443 --certificate-authority=/etc/kubernetes/pki/ca.crt
+   - kubectl config set-credentials default-admin --certificate-authority=/etc/kubernetes/pki/ca.crt --client-key=/etc/kubernetes/pki/kubecfg.key --client-certificate=/etc/kubernetes/pki/kubecfg.crt
+   - kubectl config set-context default-context --cluster=default-cluster --user=default-admin
+   - kubectl config use-context default-context
+
+
+ - name: test
+   debug: var=hostvars.k8s-1.ansible_ssh_host

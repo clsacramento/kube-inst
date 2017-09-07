@@ -1,15 +1,14 @@
 ---
-# Configures k8s nodes
+# Deploy k8s
 
- - hosts: kube
-   roles: 
-   - role: kube-install
- - hosts: master
-   roles:
-    - role: master
- - hosts: kube
-   roles:
-    - role: flannel
- - hosts: kubelets
-   roles:
-    - role: kubelets 
+- include: test.yml
+
+- include: preconf.yml
+
+- include: kube-install.yml
+
+- include: kube-config.yml
+
+- include: kube-addons.yml
+
+- include: kubectl.yml
