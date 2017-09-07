@@ -1,6 +1,0 @@
----
-# Configures k8s nodes
-
- - hosts: kubelets
-   tasks:
-    - include: roles/kubelets/tasks/docker-proxy.yml
