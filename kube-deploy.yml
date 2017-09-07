@@ -10,3 +10,5 @@
 - include: kube-config.yml
 
 - include: kube-addons.yml
+
+- include: kubectl.yml
