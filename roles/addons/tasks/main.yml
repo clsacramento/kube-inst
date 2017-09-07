@@ -70,7 +70,7 @@
    shell: "while ! kubectl get pods --all-namespaces | grep frontend | grep -iq running; do sleep 5; done"
 
  - name: get cluster info
-   command: "kubectl cluster-info"
+   shell: "kubectl cluster-info"
    register: clusterinfo
 
  - name: show cluster info
@@ -78,5 +78,9 @@
    with_items: 
      - "{{ clusterinfo.stdout_lines }}"
 
+ - name: get jenkins password
+   shell: "kubectl exec -it $(kubectl get pods --selector=app=jenkins --output=jsonpath={.items..metadata.name}) cat /root/.jenkins/secrets/initialAdminPassword"
+   register: jenkins_password
+
  - name: save jenkins password
-   command: "kubectl exec -it `kubectl get pods --selector=app=jenkins --output=jsonpath={.items..metadata.name}` cat /root/.jenkins/secrets/initialAdminPassword > /home/centos/jenkins_password"
+   local_action: copy content={{ jenkins_password }} dest=~/jenkins_password
