@@ -6,7 +6,7 @@ else
 	FLANNEL_CIDR=$1
 fi
 
-keypath={{ etcd_prefix }}/config
+keypath={{ etcd_prefix | default('/kube-centos/network') }}/config
 
 key=`etcdctl ls $keypath`
 

@@ -12,7 +12,7 @@
    lineinfile:
      path: /etc/sysconfig/flanneld
      regexp: '^FLANNEL_ETCD_PREFIX='
-     line: 'FLANNEL_ETCD_PREFIX="{{ etcd_prefix }}"'
+     line: 'FLANNEL_ETCD_PREFIX="{{ etcd_prefix | default('/kube-centos/network') }}"'
    become: yes
 
  - name: Start and enable flanneld
