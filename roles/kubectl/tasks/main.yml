@@ -15,7 +15,7 @@
  - name: Configure .kube/config
    shell: "{{ item }}"
    with_items:
-   - kubectl config set-cluster default-cluster --server=https://{{ inventory_hostname }}:6443 --certificate-authority=/etc/kubernetes/pki/ca.crt
+   - kubectl config set-cluster default-cluster --server=https://{{ hostvars[groups.master[0]].ansible_ssh_host }}:6443 --certificate-authority=/etc/kubernetes/pki/ca.crt
    - kubectl config set-credentials default-admin --certificate-authority=/etc/kubernetes/pki/ca.crt --client-key=/etc/kubernetes/pki/kubecfg.key --client-certificate=/etc/kubernetes/pki/kubecfg.crt
    - kubectl config set-context default-context --cluster=default-cluster --user=default-admin
    - kubectl config use-context default-context
