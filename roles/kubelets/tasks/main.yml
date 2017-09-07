@@ -99,4 +99,4 @@
    become: yes
    notify:
     - restart docker
-   when: proxy is enabled
+   when: proxy is defined
