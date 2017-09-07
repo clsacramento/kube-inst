@@ -1,0 +1,20 @@
+---
+# deploy gluster
+
+ - name: Copy deploy scripts
+   copy: src=./files/deploy dest=/tmp/.
+   become: yes
+
+ - name: Add topology file
+   template: src=./templates/topology.json dest=/tmp/deploy/topology.json
+   become: yes
+
+ - name: Run gk-deploy to deploy gluster and heketi
+   shell: "bash gk-deploy -y -g -n gluster | tee /tmp/deploy/deployed.log"
+   args:
+     chdir: /tmp/deploy
+   become: yes
+   register: gkdeploy
+
+ - name: show gk-deploy msgs
+   debug: var=gkdeploy.stdout_linesk

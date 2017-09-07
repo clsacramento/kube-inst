@@ -1,0 +1,12 @@
+---
+# gluster on k8s
+
+ - hosts: kubelets
+   any_errors_fatal: true
+   max_fail_percentage: 0
+   tasks: 
+   - include: roles/gluster/tasks/check-disks.yml
+
+ - hosts: master
+   roles:
+   - role: gluster
