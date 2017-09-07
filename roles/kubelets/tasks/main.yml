@@ -75,7 +75,7 @@
    lineinfile:
      path: /etc/kubernetes/kubelet
      regexp: 'KUBELET_ARGS='
-     line: 'KUBELET_ARGS="--cluster-dns={{ cluster_dns | default('10.254.3.100') }} --cluster-domain={{ cluster_domain | default('cluster.local') }}"'
+     line: 'KUBELET_ARGS="--cluster-dns={{ cluster_dns | default(''10.254.3.100'') }} --cluster-domain={{ cluster_domain | default(''cluster.local'') }}"'
    become: yes
 
  - name: Start and enable kube-proxy
