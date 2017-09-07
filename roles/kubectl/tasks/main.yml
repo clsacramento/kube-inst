@@ -6,8 +6,7 @@
    become: yes
 
  - name: Create .kube dir
-   file: path={{ ansible_env.HOME }} state=directory
-   become: yes
+   file: path={{ ansible_env.HOME }}/.kube state=directory
 
  - name: Create kubernets pki dir
    file: path=/etc/kubernetes/pki state=directory
