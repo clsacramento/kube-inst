@@ -5,4 +5,5 @@
    roles:
    - role: preconf
    - role: ntp
+ - hosts: all
    - role: etc-hosts

@@ -1,0 +1,17 @@
+---
+# deploy first app locally
+# - name: create firstapp dir
+#   file: path=/tmp/firstapp state=directory
+#   become: yes
+
+ - name: copy first app file
+   copy: src=./files/firstapp dest=/tmp/.
+                files/firstapp
+   become: yes
+
+ - name: build first app image
+   shell: "docker build -t firstapp . | tee /tmp/firstapp/built"
+   args:
+     chdir: /tmp/firstapp
+     creates: /tmp/firstapp/built
+   become: yes

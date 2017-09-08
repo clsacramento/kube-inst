@@ -1,0 +1,10 @@
+---
+# Deploys GlusterFS on the nodes and configures gluster storage class
+
+ - name: Check if nodes have a device for gluster disk
+   shell: "fdisk -l | grep {{ gluster_disk }}"
+   become: yes
+
+ - name: Message about disks
+   debug: msg="Gluster disk {{ gluster_disk }}  was found on node {{ inventory_hostname }}  and will be used for gluster. Note - will also be formatted"
+

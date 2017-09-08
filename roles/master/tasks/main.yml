@@ -97,7 +97,7 @@
    lineinfile:
      path: /etc/kubernetes/apiserver
      regexp: 'KUBE_ADMISSION_CONTROL='
-     line: 'KUBE_ADMISSION_CONTROL="--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota"'
+     line: 'KUBE_ADMISSION_CONTROL="--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota,DefaultStorageClass"'
    become: yes
 
  - name: /etc/kubernetes/apiserver KUBE_API_ARGS
