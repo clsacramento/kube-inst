@@ -23,9 +23,9 @@ cd kube-inst
 ansible-playbook -i hosts kube-deploy.yml
 ~~~
 
-Or just run each playbook one at a time
+### Or just run each playbook one at a time
 
-### Check if ansible is able to access all hosts:
+#### Check if ansible is able to access all hosts:
 
 ~~~
 ansible-playbook -i hosts test.yml
@@ -33,19 +33,19 @@ ansible-playbook -i hosts test.yml
 
 Dont continue if this doesnt work, fix it!
 
-### Preconf
+#### Preconf
 This was not testd but should run like this:
 ~~~
 ansible-playbook -i hosts preconf.yml
 ~~~
 NB: if this does not work check the proxy on /etc/yum.conf on all hosts and run yum update
 
-### Install kubernetes, etcd and docker packages on all hosts
+#### Install kubernetes, etcd and docker packages on all hosts
 ~~~
 ansible-playbook -i hosts kube-install.yml
 ~~~
 
-### Configure master and kubernetes nodes
+#### Configure master and kubernetes nodes
 ~~~
 ansible-playbook -i hosts kube-config.yml
 ~~~
