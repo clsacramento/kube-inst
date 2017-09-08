@@ -101,6 +101,17 @@ kubectl create -f Dashboard/dashboard-service.yaml
 kubectl create -f cluster-monitoring/influxdb
 ~~~
 
+### Jenkins job
+Repo: https://github.com/miguelcastilho/examples
+
+Jenkins job:
+~~~
+docker build -t localhost:5000/admin/gb-frontend:$GIT_COMMIT -f guestbook/php-redis/Dockerfile guestbook/php-redis
+docker push localhost:5000/admin/gb-frontend:$GIT_COMMIT
+sed 's#localhost:5000/admin/gb-frontend:latest#'localhost:5000/admin/gb-frontend:$GIT_COMMIT'#' guestbook/frontend-deployment.yaml | kubectl apply -f -
+kubectl rollout status deployment/frontend
+~~~
+
 
 ### Check
 ~~~
