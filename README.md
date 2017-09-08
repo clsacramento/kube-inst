@@ -1,6 +1,7 @@
 # Install Kubernetes
 
-The playbooks are not integrated for a one command installation.
+## Prerequisites
+TODO
 
 These should be run on the master node:
 ~~~
@@ -63,7 +64,12 @@ $ kubectl delete deployment hello-web
 
 ## Complimentary configuration
 
-Here we will deploy some addons services, such as, the DNS and the Dashboard that will complute the k8s installation.
+Here we will deploy some addons services, such as:
+* DNS
+* Dashboard
+* Grafana / Heapster / InfluxDB
+* Registry
+* Jenkins
 
 ### Run the playbook:
 ~~~
