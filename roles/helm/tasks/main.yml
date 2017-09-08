@@ -1,0 +1,19 @@
+---
+#Deplots Helm
+
+ - name: Copy get script
+   copy: src=./files/get_helm.sh dest=/tmp/get_helm.sh mode=700
+   become: yes
+
+ - name: Get helm
+   shell: "https_proxy={{ proxy }} ./get_helm.sh | tee gothelm"
+   args:
+     chdir: /tmp
+     creates: /tmp/gothelm
+   become: yes
+ 
+ - name: init helm
+   shell: "https_proxy={{ proxy }} helm init | tee /tmp/inithelm"
+   args:
+     creates: /tmp/inithelm
+   become: yes

@@ -1,0 +1,6 @@
+---
+# Deploys Helm
+
+ - hosts: master
+   roles:
+    - role: helm
