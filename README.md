@@ -1,9 +1,10 @@
 # Install Kubernetes
 
 ## Prerequisites
-TODO
+All nodes are deployed with CentoOS 7.x and networking is configured
+The nodes can be accessed with the same SSH key
 
-These should be run on the master node:
+These should be run on the master node or a jumpbox:
 ~~~
 git clone https://github.com/clsacramento/kube-inst
 cd kube-inst
