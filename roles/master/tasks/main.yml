@@ -145,6 +145,9 @@
 
  - name: set network/config in etcd
    command: bash /tmp/etcd-network-config.sh
+   register: etcdnetconfig
+   changed_when: etcdnetconfig.rc != 0
+     
    become: yes
 
  - name: Start and enable kube-apiserver
