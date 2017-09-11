@@ -1,29 +1,14 @@
 [local]
 localhost ansible_connection=local
 
-[k8s-1]
+[master]
 k8s-1 ansible_ssh_host=10.30.20.14
 
-[k8s-2]
-k8s-2 ansible_ssh_host=10.30.20.11
-
-[k8s-3]
-k8s-3 ansible_ssh_host=10.30.20.7
-
-[k8s-4]
-k8s-4 ansible_ssh_host=10.30.20.16
-
-[k8s-5]
-k8s-5 ansible_ssh_host=10.30.20.5
-
-[master]
-k8s-1
-
 [kubelets]
-k8s-2
-k8s-3
-k8s-4
-k8s-5
+k8s-2 ansible_ssh_host=10.30.20.11
+k8s-3 ansible_ssh_host=10.30.20.7
+k8s-4 ansible_ssh_host=10.30.20.16
+k8s-5 ansible_ssh_host=10.30.20.5
 
 [kube:children]
 master
