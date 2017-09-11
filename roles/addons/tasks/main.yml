@@ -4,6 +4,7 @@
  - name: get nodes
    command: "kubectl get nodes"
    register: nodes
+   changed_when: false
 
  - name: show nodes
    debug: var=nodes
@@ -75,15 +76,18 @@
    changed_when: false
 
  - name: copy guestbook yaml
+   when: deploy_guestbook == true
    copy: src=./files/guestbook.yaml dest=/tmp/guestbook.yaml
    become: yes
 
  - name: deploy guestbook template
+   when: deploy_guestbook == true
    shell: "kubectl apply -f /tmp/guestbook.yaml"
    register: guestbook
    changed_when: '"created" in guestbook.stdout'
 
  - name: wait for guestbook deployment
+   when: deploy_guestbook == true
    shell: "while ! kubectl get pods --all-namespaces | grep frontend | grep -iq running; do sleep 5; done"
    changed_when: false
 
@@ -100,6 +104,7 @@
  - name: get jenkins password
    shell: "kubectl exec -n kube-system $(kubectl get pods -n kube-system --selector=app=jenkins --output=jsonpath={.items..metadata.name}) -- cat /root/.jenkins/secrets/initialAdminPassword"
    register: jenkins_password
+   changed_when: false
 
  - name: show jenkins password
    debug: var=jenkins_password.stdout
