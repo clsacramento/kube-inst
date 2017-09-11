@@ -98,7 +98,7 @@
      - "{{ clusterinfo.stdout_lines }}"
 
  - name: get jenkins password
-   shell: "kubectl exec $(kubectl get pods -n kube-system --selector=app=jenkins --output=jsonpath={.items..metadata.name}) -- cat /root/.jenkins/secrets/initialAdminPassword"
+   shell: "kubectl exec -n kube-system $(kubectl get pods -n kube-system --selector=app=jenkins --output=jsonpath={.items..metadata.name}) -- cat /root/.jenkins/secrets/initialAdminPassword"
    register: jenkins_password
 
  - name: show jenkins password
