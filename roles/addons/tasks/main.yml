@@ -7,7 +7,7 @@
    changed_when: false
 
  - name: show nodes
-   debug: var=nodes
+   debug: var=nodes.stdout_lines
 
  - name: copy skydns-rc template
    template: src=./templates/skydns-rc.yaml dest=/tmp/skydns-rc.yaml
