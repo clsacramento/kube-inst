@@ -25,9 +25,6 @@ k8s-3
 k8s-4
 k8s-5
 
-[kube]
-k8s-1
-k8s-2
-k8s-3
-k8s-4
-k8s-5
+[kube:children]
+master
+kubelets
