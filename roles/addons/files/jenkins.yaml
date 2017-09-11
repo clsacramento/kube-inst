@@ -43,6 +43,13 @@ spec:
           mountPath: /root/.jenkins
         - name: docker
           mountPath: /var/run/docker.sock
+        readinessProbe:
+          exec:
+            command:
+            - ls
+            - /root/.jenkins/secrets/initialAdminPassword
+          initialDelaySeconds: 15
+          periodSeconds: 5
       volumes:
       - name: docker
         hostPath:

@@ -59,7 +59,7 @@
    changed_when: '"created" in jenkins.stdout'
 
  - name: wait for jenkins deployment
-   shell: "while ! kubectl get pods --all-namespaces | grep jenkins | grep -iq running; do sleep 5; done"
+   shell: "while ! kubectl get pods --all-namespaces | grep jenkins | grep running -i | grep '1/1' -q; do sleep 5; done"
    changed_when: false
 
  - name: copy registry yaml
