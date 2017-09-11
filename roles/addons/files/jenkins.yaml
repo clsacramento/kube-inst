@@ -47,7 +47,7 @@ spec:
           exec:
             command:
             - ls
-            - /root/.jenkins/secrets/initialAdminPassword
+            - /root/.jenkins/secrets/master.key
           initialDelaySeconds: 15
           periodSeconds: 5
       volumes:
