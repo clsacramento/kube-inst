@@ -74,5 +74,4 @@ spec:
         hostPath:
           path: /var/run/docker.sock
       - name: jenkins-persistent-storage
-        persistentVolumeClaim:
-          claimName: jenkins-claim
+        emptyDir: {}
