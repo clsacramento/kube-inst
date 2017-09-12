@@ -55,4 +55,5 @@ spec:
         hostPath:
           path: /var/run/docker.sock
       - name: jenkins-persistent-storage
-        emptyDir: {}
+        hostPath:
+          path: "/data/jenkins/"
