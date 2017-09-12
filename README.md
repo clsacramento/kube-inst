@@ -1,8 +1,10 @@
 # Install Kubernetes
 
-The playbooks are not integrated for a one command installation.
+## Prerequisites
+All nodes are deployed with CentoOS 7.x and networking is configured
+The nodes can be accessed with the same SSH key
 
-These should be run on the master node:
+These should be run on the master node or a jumpbox:
 ~~~
 git clone https://github.com/clsacramento/kube-inst
 cd kube-inst
@@ -23,9 +25,9 @@ cd kube-inst
 ansible-playbook -i hosts kube-deploy.yml
 ~~~
 
-Or just run each playbook one at a time
+### Or just run each playbook one at a time
 
-### Check if ansible is able to access all hosts:
+#### Check if ansible is able to access all hosts:
 
 ~~~
 ansible-playbook -i hosts test.yml
@@ -33,19 +35,19 @@ ansible-playbook -i hosts test.yml
 
 Dont continue if this doesnt work, fix it!
 
-### Preconf
+#### Preconf
 This was not testd but should run like this:
 ~~~
 ansible-playbook -i hosts preconf.yml
 ~~~
 NB: if this does not work check the proxy on /etc/yum.conf on all hosts and run yum update
 
-### Install kubernetes, etcd and docker packages on all hosts
+#### Install kubernetes, etcd and docker packages on all hosts
 ~~~
 ansible-playbook -i hosts kube-install.yml
 ~~~
 
-### Configure master and kubernetes nodes
+#### Configure master and kubernetes nodes
 ~~~
 ansible-playbook -i hosts kube-config.yml
 ~~~
@@ -63,7 +65,12 @@ $ kubectl delete deployment hello-web
 
 ## Complimentary configuration
 
-Here we will deploy some addons services, such as, the DNS and the Dashboard that will complute the k8s installation.
+Here we will deploy some addons services, such as:
+* DNS
+* Dashboard
+* Grafana / Heapster / InfluxDB
+* Registry
+* Jenkins
 
 ### Run the playbook:
 ~~~
@@ -93,6 +100,17 @@ KUBELET_ARGS="--cluster-dns=10.254.3.100 --cluster-domain=cluster.local"
 kubectl create -f Dashboard/dashboard-controller.yaml
 kubectl create -f Dashboard/dashboard-service.yaml   
 kubectl create -f cluster-monitoring/influxdb
+~~~
+
+### Jenkins job
+Repo: https://github.com/miguelcastilho/examples
+
+Jenkins job:
+~~~
+docker build -t localhost:5000/admin/gb-frontend:$GIT_COMMIT -f guestbook/php-redis/Dockerfile guestbook/php-redis
+docker push localhost:5000/admin/gb-frontend:$GIT_COMMIT
+sed 's#localhost:5000/admin/gb-frontend:latest#'localhost:5000/admin/gb-frontend:$GIT_COMMIT'#' guestbook/frontend-deployment.yaml | kubectl --namespace=default apply -f -
+kubectl -n default rollout status deployment/frontend
 ~~~
 
 

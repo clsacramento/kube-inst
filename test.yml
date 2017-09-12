@@ -2,10 +2,12 @@
 ### Test connectivity to all hosts
 
   - hosts: kube
+    any_errors_fatal: true
+    max_fail_percentage: 0
     tasks:
       - name: uptime
         shell: uptime ; date ; sleep 3
-        register: upr
+        register: upt
 
       - debug:
-          var : upr
+          var : upt

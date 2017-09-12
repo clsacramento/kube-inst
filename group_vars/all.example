@@ -14,3 +14,5 @@ cluster_dns: 10.254.3.100
 cluster_domain: cluster.local
 #physical device on nodes to be used for GlusterFS
 gluster_disk: /dev/vdb
+#if true will deploy the guestbook app as an addon
+deploy_guestbook: true

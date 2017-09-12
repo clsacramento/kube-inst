@@ -1,7 +1,18 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: redis-master
+  namespace: demo
   labels:
     app: redis
     role: master
@@ -19,6 +30,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: redis-master
+  namespace: demo
 spec:
   replicas: 1
   template:
@@ -42,6 +54,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redis-slave
+  namespace: demo
   labels:
     app: redis
     role: slave
@@ -58,6 +71,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: redis-slave
+  namespace: demo
 spec:
   replicas: 2
   template:
@@ -92,6 +106,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontend
+  namespace: demo
   labels:
     app: guestbook
     tier: frontend
@@ -111,6 +126,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: frontend
+  namespace: demo
 spec:
   replicas: 3
   template:

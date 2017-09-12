@@ -4,9 +4,10 @@
  - name: get nodes
    command: "kubectl get nodes"
    register: nodes
+   changed_when: false
 
  - name: show nodes
-   debug: var=nodes
+   debug: var=nodes.stdout_lines
 
  - name: copy skydns-rc template
    template: src=./templates/skydns-rc.yaml dest=/tmp/skydns-rc.yaml
@@ -17,61 +18,83 @@
 
  - name: deploy skydns templates
    shell: "kubectl apply -f /tmp/skydns-rc.yaml && kubectl apply -f /tmp/skydns-svc.yaml"
+   register: skydns
+   changed_when: '"created" in skydns.stdout'
 
  - name: wait for skydns deployment
    shell: "while ! kubectl get pods --all-namespaces | grep kube-dns | grep -iq running; do sleep 5; done"
+   changed_when: false
 
  - name: copy dashboard yamls
    copy: src=./files/dashboard dest=/tmp/.
 
  - name: deploy dashboard yamls
    shell: "kubectl apply -f /tmp/dashboard/dashboard-controller.yaml && kubectl apply -f /tmp/dashboard/dashboard-service.yaml"
+   register: dashboard
+   changed_when: '"created" in dashboard.stdout'
 
  - name: wait for dashboard pods
    shell: "while ! kubectl get pods --all-namespaces | grep dashboard | grep -iq running; do sleep 5; done"
+   changed_when: false
 
  - name: copy influx yamls
    copy: src=./files/influxdb dest=/tmp/.
 
  - name: deploy influx pods
    shell: "kubectl apply -f /tmp/influxdb"
+   register: influx
+   changed_when: '"created" in influx.stdout'
 
  - name: wait for monitoring pods
    shell: "while ! kubectl get pods --all-namespaces | grep grafana | grep -iq running; do sleep 5; done"
+   changed_when: false
 
- - name: copy jenkins template
-   template: src=./templates/jenkins.yaml dest=/tmp/jenkins.yaml
+ - name: copy jenkins yaml
+   copy: src=./files/jenkins.yaml dest=/tmp/jenkins.yaml
    become: yes
 
  - name: deploy jenkins template
    shell: "kubectl apply -f /tmp/jenkins.yaml"
+   register: jenkins
+   changed_when: '"created" in jenkins.stdout'
 
  - name: wait for jenkins deployment
-   shell: "while ! kubectl get pods --all-namespaces | grep jenkins | grep -iq running; do sleep 5; done"
+   shell: "while ! kubectl get pods --all-namespaces | grep jenkins | grep running -i | grep '1/1' -q; do sleep 5; done"
+   changed_when: false
 
- - name: copy registry template
-   template: src=./templates/registry.yaml dest=/tmp/registry.yaml
+ - name: copy registry yaml
+   copy: src=./files/registry.yaml dest=/tmp/registry.yaml
    become: yes
 
  - name: deploy registry template
    shell: "kubectl apply -f /tmp/registry.yaml"
+   register: registry
+   changed_when: '"created" in registry.stdout'
 
  - name: wait for registry deployment
    shell: "while ! kubectl get pods --all-namespaces | grep registry | grep -iq running; do sleep 5; done"
+   changed_when: false
 
- - name: copy guestbook template
-   template: src=./templates/guestbook.yaml dest=/tmp/guestbook.yaml
+ - name: copy guestbook yaml
+   when: deploy_guestbook == true
+   copy: src=./files/guestbook.yaml dest=/tmp/guestbook.yaml
    become: yes
 
  - name: deploy guestbook template
+   when: deploy_guestbook == true
    shell: "kubectl apply -f /tmp/guestbook.yaml"
+   register: guestbook
+   changed_when: '"created" in guestbook.stdout'
 
  - name: wait for guestbook deployment
+   when: deploy_guestbook == true
    shell: "while ! kubectl get pods --all-namespaces | grep frontend | grep -iq running; do sleep 5; done"
+   changed_when: false
 
  - name: get cluster info
    shell: "kubectl cluster-info"
    register: clusterinfo
+   changed_when: false
 
  - name: show cluster info
    debug: msg="{{ item }}"
@@ -79,8 +102,9 @@
      - "{{ clusterinfo.stdout_lines }}"
 
  - name: get jenkins password
-   shell: "kubectl exec $(kubectl get pods --selector=app=jenkins --output=jsonpath={.items..metadata.name}) -- cat /root/.jenkins/secrets/initialAdminPassword"
+   shell: "kubectl exec -n kube-system $(kubectl get pods -n kube-system --selector=app=jenkins --output=jsonpath={.items..metadata.name}) -- cat /root/.jenkins/secrets/initialAdminPassword"
    register: jenkins_password
+   changed_when: false
 
  - name: show jenkins password
    debug: var=jenkins_password.stdout
