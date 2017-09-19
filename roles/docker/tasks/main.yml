@@ -1,0 +1,31 @@
+---
+# Installs and configure NTP
+#
+
+- name: Install yum-utils
+  yum:
+    name: yum-utils
+    state: latest
+  become: yes
+
+- name: Install device-mapper-persistent-data
+  yum:
+    name: device-mapper-persistent-data
+    state: latest
+  become: yes
+
+- name: Install lvm2
+  yum:
+    name: lvm2
+    state: latest
+  become: yes
+
+- name: Add docker repo
+  command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  become: yes
+
+- name: Install docker
+  yum:
+    name: docker-ce 
+    state: latest
+  become: yes

@@ -1,0 +1,6 @@
+---
+# Deploy k8s
+
+- include: test.yml
+
+- include: preconf.yml

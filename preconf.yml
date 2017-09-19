@@ -5,6 +5,7 @@
    roles:
    - role: preconf
    - role: ntp
+   - role: docker
  - hosts: all
    roles:
    - role: etc-hosts
