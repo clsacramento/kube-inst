@@ -1,6 +1,9 @@
 ---
 # Configures /etc/hosts for all hosts
 
+ - name: set hostname
+   hostname: name={{ inventory_hostname }}
+
  - name: Add hosts to /etc/hosts
    lineinfile:
      dest: /etc/hosts
