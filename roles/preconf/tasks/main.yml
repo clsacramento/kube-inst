@@ -28,14 +28,10 @@
  - name: check if firewalld is installed
    shell: "if systemctl status firewalld | grep -q loaded; then echo true; else echo false ; fi;"
    register: firewalld_installed
+   changed_when: false
 
  - name: disable firewalld
    service: name=firewalld state=stopped enabled=no
    become: yes
-   when: "firewalld_installed == true"
+   when: firewalld_installed.stdout == "true" 
 
-# - name: modprobe bridge netfilter
-#   modprobe: name=br_netfilter state=present
-
-# - name: sysctl br ntfilter and ip forwarding
-#   sysctl: reload=yes sysctl_file=/etc/sysctl.d/kubernetes.conf
