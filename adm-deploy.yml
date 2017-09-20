@@ -4,3 +4,5 @@
 - include: test.yml
 
 - include: preconf.yml
+
+- include: kube-install.yml
