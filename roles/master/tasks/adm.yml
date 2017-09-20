@@ -3,7 +3,7 @@
 
 
  - name: Run Kubeadm
-   shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,{{ hostvars[groups.master[0]].ansible_ssh_host }} && kubeadm init"
+   shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,{{ hostvars[groups.master[0]].ansible_ssh_host }} && kubeadm init --pod-network-cidr={{ network_cidr }}"
    become: yes
 
  - name: Create .kube dir
@@ -16,18 +16,3 @@
 
  - name: Change owner of kubeconfig
    shell: "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
-
-# - name: Copy kubeconfig to tmp dir and change owner
-#   copy:
-#     src: /etc/kubernetes/admin.conf
-#     dest: /tmp/config
-#     owner: $(id -u)
-#     group: $(id -g)
-#     remote_src: yes
-#   become: yes
-#
-# - name: Copy kubeconfig to user .kube
-#   copy:
-#     src: /tmp/config
-#     dest: $HOME/.kube/config
-#     remote_src: yes

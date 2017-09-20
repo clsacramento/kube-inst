@@ -6,3 +6,5 @@
 - include: preconf.yml
 
 - include: kube-install.yml
+
+- include: network.yml
