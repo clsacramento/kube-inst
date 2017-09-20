@@ -17,7 +17,7 @@
  - name: Change owner of kubeconfig
    shell: "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
 
-- name: wait for kubernetes deployment
+ - name: wait for kubernetes deployment
    shell: "kubectl get pods --all-namespaces | grep etcd"
    register: result
    until: result.stdout.find("Running") != -1
