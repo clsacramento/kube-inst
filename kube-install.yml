@@ -4,3 +4,7 @@
  - hosts: kube
    roles: 
    - role: kube-install
+
+ - hosts: master
+   tasks:
+    - include: roles/master/tasks/adm.yml

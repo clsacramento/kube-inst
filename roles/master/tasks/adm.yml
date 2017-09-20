@@ -1,0 +1,33 @@
+---
+# Master configuration
+
+
+ - name: Run Kubeadm
+   shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,10.1.0.9 && kubeadm init"
+   become: yes
+
+ - name: Create .kube dir
+   file: 
+     path: $HOME/.kube
+     state: directory
+
+ - name: Copy kubeconfig to .kube
+   shell: "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config"
+
+ - name: Change owner of kubeconfig
+   shell: "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
+
+# - name: Copy kubeconfig to tmp dir and change owner
+#   copy:
+#     src: /etc/kubernetes/admin.conf
+#     dest: /tmp/config
+#     owner: $(id -u)
+#     group: $(id -g)
+#     remote_src: yes
+#   become: yes
+#
+# - name: Copy kubeconfig to user .kube
+#   copy:
+#     src: /tmp/config
+#     dest: $HOME/.kube/config
+#     remote_src: yes
