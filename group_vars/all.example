@@ -1,18 +1,25 @@
 #ntp server to configure cluster time
 ntp_servers: 172.16.1.5 
+
 #default proxy
 proxy: http://172.16.1.5:8080/
 #proxy that will be configured for yum
 yum_proxy: http://172.16.1.5:3142/
+
+# Choose CNI network
+# # Possible values are calico
+cni_network=calico
+
 #ETCD prefix where flannel will look for the network configuration
-etcd_prefix: /kube-centos/network
+#etcd_prefix: /kube-centos/network
 #CIDR that wil be configured for the flannel overlay
-flannel_cidr: 172.30.0.0/16
+#flannel_cidr: 172.30.0.0/16
 #IP to be assinged for the sky-dns service
-cluster_dns: 10.254.3.100
+#cluster_dns: 10.254.3.100
 #Default domain that will be configured on sky-dns
-cluster_domain: cluster.local
+#cluster_domain: cluster.local
 #physical device on nodes to be used for GlusterFS
-gluster_disk: /dev/vdb
+#gluster_disk: /dev/vdb
+
 #if true will deploy the guestbook app as an addon
-deploy_guestbook: true
+#deploy_guestbook: true

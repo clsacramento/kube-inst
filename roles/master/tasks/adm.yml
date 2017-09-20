@@ -3,7 +3,7 @@
 
 
  - name: Run Kubeadm
-   shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,10.1.0.9 && kubeadm init"
+   shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,{{ hostvars[groups.master[0]].ansible_ssh_host }} && kubeadm init"
    become: yes
 
  - name: Create .kube dir
