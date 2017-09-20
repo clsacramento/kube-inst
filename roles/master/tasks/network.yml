@@ -1,7 +1,18 @@
 ---
 # CNI network configuration
 
-
- - name: Deploy Calico
-   shell: "https_proxy={{ proxy }} kubectl apply -f http://docs.projectcalico.org/v2.4/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
+ - name: copy calico yaml
    when: cni_network == "calico"
+   copy: src=./files/calico.yaml dest=/tmp/calico.yaml
+
+ - name: deploy calico template
+   when: cni_network == "calico"
+   shell: "kubectl apply -f /tmp/calico.yaml"
+
+ - name: wait for Calico deployment
+   when: cni_network == "calico"
+   shell: "kubectl get pods --all-namespaces | grep etcd"
+   register: result
+   until: result.stdout.find("Running") != -1
+   retries: 30
+   delay: 10
