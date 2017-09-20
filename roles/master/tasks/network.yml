@@ -3,7 +3,7 @@
 
  - name: copy calico yaml
    when: cni_network == "calico"
-   copy: src=./files/calico.yaml dest=/tmp/calico.yaml
+   copy: src=../files/calico.yaml dest=/tmp/.
 
  - name: deploy calico template
    when: cni_network == "calico"
@@ -19,11 +19,11 @@
 
  - name: copy Flannel yaml
    when: cni_network == "flannel"
-   copy: src=./files/kube-flannel.yml dest=/tmp/kube-flannel.yml
+   copy: src=../files/kube-flannel.yml dest=/tmp/.
 
  - name: copy Flannel RBAC yaml
    when: cni_network == "flannel"
-   copy: src=./files/kube-flannel-rbac.yml dest=/tmp/kube-flannel-rbac.yml
+   copy: src=../files/kube-flannel-rbac.yml dest=/tmp/.
 
  - name: deploy Flannel template
    when: cni_network == "flannel"
