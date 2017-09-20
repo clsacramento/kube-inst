@@ -7,8 +7,9 @@ proxy: http://172.16.1.5:8080/
 yum_proxy: http://172.16.1.5:3142/
 
 # Choose CNI network
-# # Possible values are calico
-cni_network=calico
+# # Possible values are calico, flannel
+cni_network: calico
+network_cidr: 192.168.0.0/16
 
 #ETCD prefix where flannel will look for the network configuration
 #etcd_prefix: /kube-centos/network

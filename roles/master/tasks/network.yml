@@ -11,7 +11,31 @@
 
  - name: wait for Calico deployment
    when: cni_network == "calico"
-   shell: "kubectl get pods --all-namespaces | grep etcd"
+   shell: "kubectl get pods --all-namespaces | grep kube-dns"
+   register: result
+   until: result.stdout.find("Running") != -1
+   retries: 30
+   delay: 10
+
+ - name: copy Flannel yaml
+   when: cni_network == "flannel"
+   copy: src=./files/kube-flannel.yml dest=/tmp/kube-flannel.yml
+
+ - name: copy Flannel RBAC yaml
+   when: cni_network == "flannel"
+   copy: src=./files/kube-flannel-rbac.yml dest=/tmp/kube-flannel-rbac.yml
+
+ - name: deploy Flannel template
+   when: cni_network == "flannel"
+   shell: "kubectl apply -f /tmp/kube-flannel.yaml"
+
+ - name: deploy Flannel RBAC template
+   when: cni_network == "flannel"
+   shell: "kubectl apply -f /tmp/kube-flannel-rbac.yaml"
+
+ - name: wait for Flannel deployment
+   when: cni_network == "flannel"
+   shell: "kubectl get pods --all-namespaces | grep kube-dns"
    register: result
    until: result.stdout.find("Running") != -1
    retries: 30
