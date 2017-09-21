@@ -1,13 +1,14 @@
 ---
 # Master configuration
 
+ - name: /proc/sys/net/bridge/bridge-nf-call-iptables = 1
+   shell: "echo 1 | tee /proc/sys/net/bridge/bridge-nf-call-iptables"
+   become: yes
 
  - name: Run Kubeadm
    shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,{{ hostvars[groups.master[0]].ansible_ssh_host }} && kubeadm init --pod-network-cidr={{ network_cidr }} --kubernetes-version={{ kubernetes_version }} | grep 'kubeadm join --token'"
    become: yes
    register: node_join
-
-   changed_when: false
 
  - name: show command to join nodes
    debug: var=node_join.stdout

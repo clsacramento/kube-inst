@@ -30,7 +30,7 @@
    become: yes
 
  - name: Read docker cgroup
-   shell: "sudo docker info | grep -i cgroup | cut -d " " -f 3"
+   shell: "sudo docker info | grep -i cgroup | cut -d ' ' -f 3"
    register: docker_cgroup
 
  - name: Verify kubelet cgroup

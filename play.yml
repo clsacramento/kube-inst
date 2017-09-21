@@ -1,4 +1,0 @@
----
-# Deploy k8s
-
-- include: join-nodes.yml
