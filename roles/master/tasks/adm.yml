@@ -3,8 +3,22 @@
 
 
  - name: Run Kubeadm
-   shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,{{ hostvars[groups.master[0]].ansible_ssh_host }} && kubeadm init --pod-network-cidr={{ network_cidr }} --kubernetes-version={{ kubernetes_version }}"
+   shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,{{ hostvars[groups.master[0]].ansible_ssh_host }} && kubeadm init --pod-network-cidr={{ network_cidr }} --kubernetes-version={{ kubernetes_version }} | grep 'kubeadm join --token'"
    become: yes
+   register: node_join
+
+   changed_when: false
+
+ - name: show command to join nodes
+   debug: var=node_join.stdout
+
+ - name: save command to join nodes
+   local_action: copy content={{ node_join.stdout }} dest=$HOME/node_join
+
+ - name: Remove .kube dir
+   file:
+     state: absent
+     path: $HOME/.kube
 
  - name: Create .kube dir
    file: 

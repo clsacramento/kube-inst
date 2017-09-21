@@ -8,3 +8,5 @@
 - include: kube-install.yml
 
 - include: network.yml
+
+- include: join-nodes.yml
