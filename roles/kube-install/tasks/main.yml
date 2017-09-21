@@ -30,11 +30,12 @@
    become: yes
 
  - name: Read docker cgroup
-   shell: "sudo docker info | grep -i cgroup | cut -d ' ' -f 3"
+   shell: "docker info | grep -i cgroup | cut -d ' ' -f 3"
    register: docker_cgroup
+   become: yes
 
  - name: Verify kubelet cgroup
-   shell: "cat /etc/systemd/system/kubelet.service.d/10-kubeadm.conf | grep -i kubelet_cgroup_args | cut -d '=' -f 4"
+   shell: cat /etc/systemd/system/kubelet.service.d/10-kubeadm.conf | grep -i kubelet_cgroup_args | cut -d '=' -f 4 | sed 's/"$//'
    register: kubelet_cgroup
 
  - name: Sync kubelet cgroup with docker cgroup
@@ -42,11 +43,11 @@
      path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
      regexp: '^Environment="KUBELET_CGROUP_ARGS=--cgroup-driver=*'
      line: 'Environment="KUBELET_CGROUP_ARGS=--cgroup-driver={{ docker_cgroup }}'
-   when: docker_cgroup == kubelet_cgroup
+   when: docker_cgroup != kubelet_cgroup
 
  - name: Enable and start kubelet
    systemd:
-     state: started
+     state: restarted
      name: kubelet
      enabled: yes
    become: yes

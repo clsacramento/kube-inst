@@ -47,6 +47,6 @@
 - name: Start and enable docker
   systemd:
     name: docker
-    state: started
+    state: restarted
     enabled: yes
   become: yes
