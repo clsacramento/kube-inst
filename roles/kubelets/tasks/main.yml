@@ -1,5 +1,15 @@
 ---
 
-- name: Join nodes to cluster
-  shell: "{{ node_join }}"
+- name: Copy file with command to join nodes
+  copy: 
+    src: "{{ ansible_env.HOME }}/node_join"
+    dest: "{{ ansible_env.HOME }}/node_join"
+
+- name: Read file with command to join nodes
+  shell: "cat {{ ansible_env.HOME }}/node_join"
+  register: node_join
+  changed_when: false
+
+- name: Join node to cluster
+  shell: "{{ node_join.stdout }}"
   become: yes
