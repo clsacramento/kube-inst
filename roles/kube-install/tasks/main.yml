@@ -29,6 +29,10 @@
      state: latest
    become: yes
 
+ - name: /proc/sys/net/bridge/bridge-nf-call-iptables = 1
+   shell: "echo 1 | tee /proc/sys/net/bridge/bridge-nf-call-iptables"
+   become: yes
+
  - name: Read docker cgroup
    shell: "docker info | grep -i cgroup | cut -d ' ' -f 3"
    register: docker_cgroup
@@ -44,6 +48,7 @@
      regexp: '^Environment="KUBELET_CGROUP_ARGS=--cgroup-driver=*'
      line: 'Environment="KUBELET_CGROUP_ARGS=--cgroup-driver={{ docker_cgroup }}'
    when: docker_cgroup != kubelet_cgroup
+   become: yes
 
  - name: Enable and start kubelet
    systemd:
