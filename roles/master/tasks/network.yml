@@ -21,21 +21,11 @@
    when: cni_network == "flannel"
    copy: src=../files/kube-flannel.yml dest=/tmp/.
 
- - name: copy Flannel RBAC yaml
-   when: cni_network == "flannel"
-   copy: src=../files/kube-flannel-rbac.yml dest=/tmp/.
-
  - name: deploy Flannel template
    when: cni_network == "flannel"
    shell: "kubectl apply -f /tmp/kube-flannel.yml"
    register: flannel
    changed_when: '"created" in flannel.stdout'
-
- - name: deploy Flannel RBAC template
-   when: cni_network == "flannel"
-   shell: "kubectl apply -f /tmp/kube-flannel-rbac.yml"
-   register: flannel_rbac
-   changed_when: '"created" in flannel_rbac.stdout'
 
  - name: wait for Flannel deployment
    when: cni_network == "flannel"
