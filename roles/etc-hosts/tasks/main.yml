@@ -3,6 +3,7 @@
 
  - name: set hostname
    hostname: name={{ inventory_hostname }}
+   become: yes
 
  - name: Add hosts to /etc/hosts
    lineinfile:
