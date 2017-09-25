@@ -39,7 +39,7 @@
    become: yes
 
  - name: Verify kubelet cgroup
-   shell: cat /etc/systemd/system/kubelet.service.d/10-kubeadm.conf | grep -i kubelet_cgroup_args | cut -d '=' -f 4 | sed 's/"$//'
+   shell: cat /etc/systemd/system/kubelet.service.d/10-kubeadm.conf | grep -i "kubelet_cgroup_args=" | cut -d '=' -f 4 | sed 's/"$//'
    register: kubelet_cgroup
 
  - name: Sync kubelet cgroup with docker cgroup
