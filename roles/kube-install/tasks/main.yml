@@ -34,7 +34,7 @@
    become: yes
 
  - name: Read docker cgroup
-   shell: "docker info | grep -i cgroup | cut -d ' ' -f 3"
+   shell: "docker info 2>/dev/null | grep -i cgroup | cut -d ' ' -f 3"
    register: docker_cgroup
    become: yes
 
