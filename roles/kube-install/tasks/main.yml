@@ -46,8 +46,8 @@
    lineinfile:
      path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
      regexp: '^Environment="KUBELET_CGROUP_ARGS=--cgroup-driver=*'
-     line: 'Environment="KUBELET_CGROUP_ARGS=--cgroup-driver={{ docker_cgroup }}'
-   when: docker_cgroup != kubelet_cgroup
+     line: 'Environment="KUBELET_CGROUP_ARGS=--cgroup-driver={{ docker_cgroup.stdout }}'
+   when: docker_cgroup.stdout != kubelet_cgroup.stdout
    become: yes
 
  - name: Enable and start kubelet
