@@ -8,6 +8,7 @@
  - name: Get the token to join nodes
    shell: "kubeadm token list | tail -n 1 | cut -f 1 -d ' '"
    register: kubeadm_token
+   become: yes
 
  - name: Save command to join nodes
    local_action: copy content="{{ kubeadm_token.stdout }}" dest="{{ ansible_env.HOME }}/node_join"
