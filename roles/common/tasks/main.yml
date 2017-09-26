@@ -1,6 +1,10 @@
 ---
 # Install kubectl
 
+ - include: preconf.yml
+ - include: ntp.yml
+ - include: docker.yml
+
  - name: Download latest kubectl
    shell: "https_proxy={{ proxy }} curl -LO https://storage.googleapis.com/kubernetes-release/release/$(https_proxy={{ proxy }} curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
 
@@ -49,10 +53,5 @@
      line: 'Environment="KUBELET_CGROUP_ARGS=--cgroup-driver={{ docker_cgroup.stdout }}"'
    when: docker_cgroup.stdout != kubelet_cgroup.stdout
    become: yes
-
- - name: Enable and start kubelet
-   systemd:
-     state: restarted
-     name: kubelet
-     enabled: yes
-   become: yes
+   notify:
+   - Restart kubelet

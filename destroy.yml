@@ -1,0 +1,19 @@
+---
+- hosts: kube
+
+  tasks:
+
+  - name: Kubeadm reset
+    shell: kubeadm reset
+    become: yes
+
+  - name: Remove .kube
+    file:
+      state: absent
+      path: "{{ ansible_env.HOME }}/.kube"
+
+  - name: Restart kubelet
+    systemd:
+      name: kubelet
+      state: restarted
+    become: yes

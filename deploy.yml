@@ -3,10 +3,6 @@
 
 - include: test.yml
 
-- include: preconf.yml
+- include: common.yml
 
-- include: kube-install.yml
-
-- include: network.yml
-
-- include: join-nodes.yml
+- include: master.yml

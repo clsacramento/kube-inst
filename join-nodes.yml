@@ -1,6 +1,0 @@
----
-# Install K8S packages and repo
-
- - hosts: kubelets
-   roles:
-    - role: kubelets

@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: gluster
-spec:
-  finalizers:
-  - kubernetes
-status:
-  phase: Active

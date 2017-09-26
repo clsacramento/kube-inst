@@ -2,9 +2,10 @@
 # Installs and configure NTP
 #
 - name: Install NTP
-  yum: name=ntp state=installed
+  yum:
+    name: ntp
+    state: installed
   become: yes
-  tags: ntp
 
 - name: Remove default NTP Servers
   replace:
@@ -22,7 +23,9 @@
   become: yes
 
 - name: Make sure NTP is stopped
-  service: name=ntpd state=stopped
+  systemd:
+    name: ntpd
+    state: stopped
   become: yes
 
 - name: First NTP sync
@@ -30,5 +33,8 @@
   become: yes
 
 - name: Make sure NTP is started up
-  service: name=ntpd state=started enabled=yes
+  systemd:
+    name: ntpd
+    state: started
+    enabled: yes
   become: yes
