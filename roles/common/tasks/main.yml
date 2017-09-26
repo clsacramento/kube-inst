@@ -3,7 +3,7 @@
 
  - include: preconf.yml
  - include: ntp.yml
- - include: docker.yml
+# - include: docker.yml
 
  - name: Download latest kubectl
    shell: "https_proxy={{ proxy }} curl -LO https://storage.googleapis.com/kubernetes-release/release/$(https_proxy={{ proxy }} curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -21,17 +21,31 @@
    copy: src=./files/kubernetes.repo dest=/etc/yum.repos.d/.
    become: yes
 
- - name: Install kubelet
+ - name: Install packages
    yum:
-     name: kubelet
+     name: "{{ item }}"
      state: latest
+   with_items:
+   - docker
+   - kubelet
+   - kubeadm
    become: yes
 
- - name: Install kubeadm
-   yum:
-     name: kubeadm
-     state: latest
+ - name: create systemd docker.service
+   file:
+     path: /etc/systemd/system/docker.service.d
+     state: directory
    become: yes
+
+ - name: Add proxy to docker
+   template:
+     src: ./templates/http-proxy.conf.j2
+     dest: /etc/systemd/system/docker.service.d/http-proxy.conf
+   become: yes
+   when: proxy is defined
+   notify:
+   - Reload systemd
+   - Restart docker
 
  - name: /proc/sys/net/bridge/bridge-nf-call-iptables = 1
    shell: "echo 1 | tee /proc/sys/net/bridge/bridge-nf-call-iptables"
@@ -54,4 +68,5 @@
    when: docker_cgroup.stdout != kubelet_cgroup.stdout
    become: yes
    notify:
+   - Reload systemd
    - Restart kubelet

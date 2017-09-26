@@ -1,17 +1,20 @@
 ---
 # Master configuration
 
- - name: Run Kubeadm
+ - name: Run Kubeadm for flannel
    shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,{{ hostvars[groups.master[0]].ansible_ssh_host }} && kubeadm init --pod-network-cidr={{ network_cidr }} --kubernetes-version={{ kubernetes_version }}"
    become: yes
+   when: network_cidr is defined
+
+ - name: Run Kubeadm
+   shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,{{ hostvars[groups.master[0]].ansible_ssh_host }} && kubeadm init --kubernetes-version={{ kubernetes_version }}"
+   become: yes
+   when: network_cidr is not defined
 
  - name: Get the token to join nodes
    shell: "kubeadm token list | tail -n 1 | cut -f 1 -d ' '"
    register: kubeadm_token
    become: yes
-
- - name: Save command to join nodes
-   local_action: copy content="{{ kubeadm_token.stdout }}" dest="{{ ansible_env.HOME }}/node_join"
 
  - name: Create .kube dir
    file: 

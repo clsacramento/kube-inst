@@ -1,11 +1,11 @@
 ---
 # CNI network configuration
 
- - name: copy calico yaml
+ - name: copy Calico yaml
    when: cni_network == "calico"
    copy: src=../files/calico.yaml dest=/tmp/.
 
- - name: deploy calico template
+ - name: deploy Calico template
    when: cni_network == "calico"
    shell: "kubectl apply -f /tmp/calico.yaml"
 
@@ -29,6 +29,24 @@
 
  - name: wait for Flannel deployment
    when: cni_network == "flannel"
+   shell: "kubectl get pods --all-namespaces | grep kube-dns"
+   register: result
+   until: result.stdout.find("Running") != -1
+   retries: 30
+   delay: 10
+
+ - name: copy Weave yaml
+   when: cni_network == "weave"
+   copy: src=../files/weave.yml dest=/tmp/.
+
+ - name: deploy Weave template
+   when: cni_network == "weave"
+   shell: "kubectl apply -f /tmp/weave.yml"
+   register: weave
+   changed_when: '"created" in weave.stdout'
+
+ - name: wait for Weave deployment
+   when: cni_network == "weave"
    shell: "kubectl get pods --all-namespaces | grep kube-dns"
    register: result
    until: result.stdout.find("Running") != -1

@@ -5,4 +5,10 @@
 
 - include: common.yml
 
+- include: destroy.yml
+
+- include: etc-hosts.yml
+
 - include: master.yml
+
+- include: node.yml
