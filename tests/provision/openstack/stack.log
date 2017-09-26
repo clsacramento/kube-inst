@@ -1,0 +1,5 @@
+2017-09-26 09:21:33Z [kubestack]: CREATE_IN_PROGRESS  Stack CREATE started
+2017-09-26 09:21:33Z [kubestack.kubevms]: CREATE_IN_PROGRESS  state changed
+2017-09-26 09:22:21Z [kubestack.kubevms]: CREATE_COMPLETE  state changed
+2017-09-26 09:22:21Z [kubestack]: CREATE_COMPLETE  Stack CREATE completed successfully
+3ee82d05-5b13-4075-af11-4511224ce391
