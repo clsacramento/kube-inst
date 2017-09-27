@@ -3,7 +3,9 @@
 
  - name: copy Calico yaml
    when: cni_network == "calico"
-   copy: src=../files/calico.yaml dest=/tmp/.
+   copy:
+     src: ../files/calico.yaml
+     dest: /tmp/.
 
  - name: deploy Calico template
    when: cni_network == "calico"
@@ -19,7 +21,9 @@
 
  - name: copy Flannel yaml
    when: cni_network == "flannel"
-   copy: src=../files/kube-flannel.yml dest=/tmp/.
+   copy:
+     src: ../files/kube-flannel.yml
+     dest: /tmp/.
 
  - name: deploy Flannel template
    when: cni_network == "flannel"
@@ -37,11 +41,13 @@
 
  - name: copy Weave yaml
    when: cni_network == "weave"
-   copy: src=../files/weave.yml dest=/tmp/.
+   copy:
+     src: ../files/weave-kube-1.6.yml
+     dest: /tmp/.
 
  - name: deploy Weave template
    when: cni_network == "weave"
-   shell: "kubectl apply -f /tmp/weave.yml"
+   shell: "kubectl apply -f /tmp/weave-kube-1.6.yml"
    register: weave
    changed_when: '"created" in weave.stdout'
 
