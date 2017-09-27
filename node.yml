@@ -2,3 +2,13 @@
 - hosts: nodes
   roles: 
   - role: nodes
+
+- hosts: master
+  tasks:
+
+   - name: Wait for nodes to become ready
+   shell: "kubectl get nodes | tail -n +2 | grep -v -w 'Ready' || true"
+   register: result
+   until: result.stdout == ""
+   retries: 30
+   delay: 10

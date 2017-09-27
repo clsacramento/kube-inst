@@ -17,12 +17,14 @@
    yum: name=* state=latest
    become: yes   
 
- - name: configure ip forwarding
-   template: src=./templates/sysctl.conf.j2 dest=/etc/sysctl.d/kubernetes.conf
-   become: yes
+# - name: configure ip forwarding
+#   template: src=./templates/sysctl.conf.j2 dest=/etc/sysctl.d/kubernetes.conf
+#   become: yes
 
- - name: disable selinux/setenforce 0
-   selinux: state=disabled
+ - name: disable selinux
+   selinux:
+     state: permissive
+     policy: targeted
    become: yes
 
  - name: check if firewalld is installed

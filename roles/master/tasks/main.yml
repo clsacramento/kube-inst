@@ -7,7 +7,8 @@
    when: network_cidr is defined
 
  - name: Run Kubeadm
-   shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,{{ hostvars[groups.master[0]].ansible_ssh_host }} && kubeadm init --kubernetes-version={{ kubernetes_version }}"
+#   shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,{{ hostvars[groups.master[0]].ansible_ssh_host }} && kubeadm init --kubernetes-version={{ kubernetes_version }}"
+   shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,{{ hostvars[groups.master[0]].ansible_ssh_host }} && kubeadm init"
    become: yes
    when: network_cidr is not defined
 

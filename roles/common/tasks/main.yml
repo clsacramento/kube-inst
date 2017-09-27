@@ -5,17 +5,17 @@
  - include: ntp.yml
 # - include: docker.yml
 
- - name: Download latest kubectl
-   shell: "https_proxy={{ proxy }} curl -LO https://storage.googleapis.com/kubernetes-release/release/$(https_proxy={{ proxy }} curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+# - name: Download latest kubectl
+#   shell: "https_proxy={{ proxy }} curl -LO https://storage.googleapis.com/kubernetes-release/release/$(https_proxy={{ proxy }} curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
 
- - name: Make the kubectl binary executable
-   file:
-     path: ./kubectl
-     mode: 775
+# - name: Make the kubectl binary executable
+#   file:
+#     path: ./kubectl
+#     mode: 775
 
- - name: Move the kubectl binary to PATH
-   command: "mv ./kubectl /usr/local/bin/kubectl"
-   become: yes
+# - name: Move the kubectl binary to PATH
+#   command: "mv ./kubectl /usr/local/bin/kubectl"
+#   become: yes
 
  - name: Add Kubernetes repo
    copy: src=./files/kubernetes.repo dest=/etc/yum.repos.d/.
@@ -29,6 +29,8 @@
    - docker
    - kubelet
    - kubeadm
+   - kubectl
+   - kubernetes-cni
    become: yes
 
  - name: create systemd docker.service
@@ -55,10 +57,12 @@
    shell: "docker info 2>/dev/null | grep -i cgroup | cut -d ' ' -f 3"
    register: docker_cgroup
    become: yes
+   changed_when: false
 
  - name: Verify kubelet cgroup
    shell: cat /etc/systemd/system/kubelet.service.d/10-kubeadm.conf | grep -i "kubelet_cgroup_args=" | cut -d '=' -f 4 | sed 's/"$//'
    register: kubelet_cgroup
+   changed_when: false
 
  - name: Sync kubelet cgroup with docker cgroup
    lineinfile:
