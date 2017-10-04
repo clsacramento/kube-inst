@@ -7,8 +7,10 @@
 
 - include: destroy.yml
 
-- include: etc-hosts.yml
-
 - include: master.yml
 
 - include: node.yml
+
+#- include: post_deploy.yml
+
+#- include: addons.yml

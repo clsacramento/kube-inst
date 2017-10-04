@@ -1,102 +1,113 @@
 ---
-# Deploys DNS, Dashboard and Heapster/Granfa/Influxdb addons
 
- - name: get nodes
-   command: "kubectl get nodes"
-   register: nodes
-   changed_when: false
+ - name: deploy Grafana, Heapster and InfluxDB
+   when: deploy_monitoring == true
+   shell: "kubectl create -f .files/"
+   register: result
+   changed_when: '"created" in result.stdout'
 
- - name: show nodes
-   debug: var=nodes.stdout_lines
-
- - name: copy dashboard yamls
-   copy: src=./files/dashboard dest=/tmp/.
-
- - name: deploy Dashboard addon
-   shell: "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml"
-   register: dashboard
-   changed_when: '"created" in dashboard.stdout'
-
-   changed_when: false
- - name: wait for Dashboard deployment
-   shell: "kubectl get pods -n kube-system | grep dashboard"
+ - name: wait for Grafana, Heapster and InfluxDB deployment
+   when: deploy_monitoring == true
+   shell: "while ! kubectl get pods -n kube-system | grep -iq grafana"
    register: result
    until: result.stdout.find("Running") != -1
-   retries: 30
+   retries: 60
    delay: 10
-
-
- - name: copy influx yamls
-   copy: src=./files/influxdb dest=/tmp/.
-
- - name: deploy influx pods
-   shell: "kubectl apply -f /tmp/influxdb"
-   register: influx
-   changed_when: '"created" in influx.stdout'
-
- - name: wait for monitoring pods
-   shell: "while ! kubectl get pods --all-namespaces | grep grafana | grep -iq running; do sleep 5; done"
    changed_when: false
 
- - name: copy jenkins yaml
-   copy: src=./files/jenkins.yaml dest=/tmp/jenkins.yaml
-   become: yes
 
- - name: deploy jenkins template
-   shell: "kubectl apply -f /tmp/jenkins.yaml"
-   register: jenkins
-   changed_when: '"created" in jenkins.stdout'
 
- - name: wait for jenkins deployment
-   shell: "while ! kubectl get pods --all-namespaces | grep jenkins | grep running -i | grep '1/1' -q; do sleep 5; done"
+
+
+
+
+
+ - name: deploy sock-shop
+   when: deploy_demo_app == true
+   shell: "{{ item }}"
+   with_items:
+   - "kubectl create namespace sock-shop"
+   - 'kubectl apply -n sock-shop -f "https://github.com/microservices-demo/microservices-demo/blob/master/deploy/kubernetes/complete-demo.yaml?raw=true"'
+   register: sock_shop
+   changed_when: '"created" in sock_shop.stdout'
+
+ - name: wait for sock-shop deployment
+   when: deploy_demo_app == true
+   shell: "while ! kubectl get pods -n sock-shop | grep -iq running; do sleep 5; done"
    changed_when: false
 
- - name: copy registry yaml
-   copy: src=./files/registry.yaml dest=/tmp/registry.yaml
-   become: yes
-
- - name: deploy registry template
-   shell: "kubectl apply -f /tmp/registry.yaml"
-   register: registry
-   changed_when: '"created" in registry.stdout'
-
- - name: wait for registry deployment
-   shell: "while ! kubectl get pods --all-namespaces | grep registry | grep -iq running; do sleep 5; done"
-   changed_when: false
-
- - name: copy guestbook yaml
-   when: deploy_guestbook == true
-   copy: src=./files/guestbook.yaml dest=/tmp/guestbook.yaml
-   become: yes
-
- - name: deploy guestbook template
-   when: deploy_guestbook == true
-   shell: "kubectl apply -f /tmp/guestbook.yaml"
-   register: guestbook
-   changed_when: '"created" in guestbook.stdout'
-
- - name: wait for guestbook deployment
-   when: deploy_guestbook == true
-   shell: "while ! kubectl get pods --all-namespaces | grep frontend | grep -iq running; do sleep 5; done"
-   changed_when: false
-
- - name: get cluster info
-   shell: "kubectl cluster-info"
-   register: clusterinfo
-   changed_when: false
-
- - name: show cluster info
-   debug: msg="{{ item }}"
-   with_items: 
-     - "{{ clusterinfo.stdout_lines }}"
-
- - name: get jenkins password
-   shell: "kubectl exec -n kube-system $(kubectl get pods -n kube-system --selector=app=jenkins --output=jsonpath={.items..metadata.name}) -- cat /root/.jenkins/secrets/initialAdminPassword"
-   register: jenkins_password
-   changed_when: false
-
- - name: show jenkins password
-   debug: var=jenkins_password.stdout
-
- - name: save jenkins password
-   local_action: copy content={{ jenkins_password.stdout }} dest=~/jenkins_password
+# - name: copy dashboard yamls
+#   copy: src=./files/dashboard dest=/tmp/.
+#
+# - name: deploy Dashboard addon
+#   shell: "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml"
+#   register: dashboard
+#   changed_when: '"created" in dashboard.stdout'
+#
+#   changed_when: false
+# - name: wait for Dashboard deployment
+#   shell: "kubectl get pods -n kube-system | grep dashboard"
+#   register: result
+#   until: result.stdout.find("Running") != -1
+#   retries: 30
+#   delay: 10
+#
+#
+# - name: copy influx yamls
+#   copy: src=./files/influxdb dest=/tmp/.
+#
+# - name: deploy influx pods
+#   shell: "kubectl apply -f /tmp/influxdb"
+#   register: influx
+#   changed_when: '"created" in influx.stdout'
+#
+# - name: wait for monitoring pods
+#   shell: "while ! kubectl get pods --all-namespaces | grep grafana | grep -iq running; do sleep 5; done"
+#   changed_when: false
+#
+# - name: copy jenkins yaml
+#   copy: src=./files/jenkins.yaml dest=/tmp/jenkins.yaml
+#   become: yes
+#
+# - name: deploy jenkins template
+#   shell: "kubectl apply -f /tmp/jenkins.yaml"
+#   register: jenkins
+#   changed_when: '"created" in jenkins.stdout'
+#
+# - name: wait for jenkins deployment
+#   shell: "while ! kubectl get pods --all-namespaces | grep jenkins | grep running -i | grep '1/1' -q; do sleep 5; done"
+#   changed_when: false
+#
+# - name: copy registry yaml
+#   copy: src=./files/registry.yaml dest=/tmp/registry.yaml
+#   become: yes
+#
+# - name: deploy registry template
+#   shell: "kubectl apply -f /tmp/registry.yaml"
+#   register: registry
+#   changed_when: '"created" in registry.stdout'
+#
+# - name: wait for registry deployment
+#   shell: "while ! kubectl get pods --all-namespaces | grep registry | grep -iq running; do sleep 5; done"
+#   changed_when: false
+#
+# - name: get cluster info
+#   shell: "kubectl cluster-info"
+#   register: clusterinfo
+#   changed_when: false
+#
+# - name: show cluster info
+#   debug: msg="{{ item }}"
+#   with_items: 
+#     - "{{ clusterinfo.stdout_lines }}"
+#
+# - name: get jenkins password
+#   shell: "kubectl exec -n kube-system $(kubectl get pods -n kube-system --selector=app=jenkins --output=jsonpath={.items..metadata.name}) -- cat /root/.jenkins/secrets/initialAdminPassword"
+#   register: jenkins_password
+#   changed_when: false
+#
+# - name: show jenkins password
+#   debug: var=jenkins_password.stdout
+#
+# - name: save jenkins password
+#   local_action: copy content={{ jenkins_password.stdout }} dest=~/jenkins_password

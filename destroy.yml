@@ -2,10 +2,10 @@
 - hosts: kube
 
   tasks:
-
-  - name: Kubeadm reset
-    shell: kubeadm reset
-    become: yes
+  
+#  - name: Kubeadm reset
+#    shell: kubeadm reset
+#    become: yes
 
   - name: Remove .kube
     file:

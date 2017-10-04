@@ -1,21 +1,15 @@
 ---
 # Master configuration
 
- - name: Run Kubeadm for flannel
-   shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,{{ hostvars[groups.master[0]].ansible_ssh_host }} && kubeadm init --pod-network-cidr={{ network_cidr }} --kubernetes-version={{ kubernetes_version }}"
-   become: yes
-   when: network_cidr is defined
+ - name: Generate config file
+   template:
+     src: "./templates/kubeadm.conf.j2"
+     dest: "{{ ansible_env.HOME }}/kubeadm.conf"
 
  - name: Run Kubeadm
-#   shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,{{ hostvars[groups.master[0]].ansible_ssh_host }} && kubeadm init --kubernetes-version={{ kubernetes_version }}"
-   shell: "export https_proxy={{ proxy }} && export http_proxy={{ proxy }} && export no_proxy=127.0.0.1,localhost,{{ hostvars[groups.master[0]].ansible_ssh_host }} && kubeadm init"
+   shell: "kubeadm reset && kubeadm init --config {{ ansible_env.HOME }}/kubeadm.conf | grep 'kubeadm join --token'"
    become: yes
-   when: network_cidr is not defined
-
- - name: Get the token to join nodes
-   shell: "kubeadm token list | tail -n 1 | cut -f 1 -d ' '"
    register: kubeadm_token
-   become: yes
 
  - name: Create .kube dir
    file: 
@@ -28,9 +22,16 @@
  - name: Change owner of kubeconfig
    shell: "sudo chown $(id -u):$(id -g) {{ ansible_env.HOME }}/.kube/config"
 
- - name: Wait for kubernetes deployment
+ - name: Wait for pods to be created
+   shell: "kubectl get pods --all-namespaces | wc -l"
+   register: result
+   until: result.stdout == "7"
+   retries: 60
+   delay: 10
+
+ - name: Wait for pods to be in running state
    shell: "kubectl get pods -n kube-system | tail -n +2 | grep -v -w 'Running' | grep -v 'kube-dns' || true"
    register: result
    until: result.stdout == ""
-   retries: 30
+   retries: 60
    delay: 10

@@ -1,0 +1,26 @@
+---
+ - name: copy busybox deployment
+   copy:
+     src: ./files/busybox.yaml
+     dest: /tmp/.
+
+ - name: deploy busybox
+   shell: "kubectl create -f /tmp/busybox.yaml"
+
+ - name: Wait for busybox to be in running state
+   shell: "kubectl get pods busybox | tail -n +2 | grep -v -w 'Running' || true"
+   register: result
+   until: result.stdout == ""
+   retries: 60
+   delay: 10
+
+ - name: Check if DNS is working
+   shell: "kubectl exec -ti busybox -- nslookup kubernetes.default"
+
+ - name: Check busybox logs
+   shell: "kubectl logs busybox"
+   register: result
+
+ - fail:
+     msg: "The DNS is not working."
+   when: "'can\'t resolve' in result.stdout"

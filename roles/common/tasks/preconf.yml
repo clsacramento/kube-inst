@@ -1,38 +1,69 @@
 ---
 ##NB: I didnt test 'cause I did this part manually
 
- - name: configure yum proxy
-   lineinfile:
-     path: /etc/yum.conf
-     regexp: '^proxy='
-     line: 'proxy={{ yum_proxy }}'
-   become: yes
-   when: yum_proxy is defined
+- name: configure yum proxy
+  lineinfile:
+    path: /etc/yum.conf
+    regexp: '^proxy='
+    line: 'proxy={{ yum_proxy }}'
+  become: yes
+  when: yum_proxy is defined and ansible_os_family == "RedHat"
 
- - name: yum clean
-   shell: yum clean expire-cache
-   become: yes
+# TODO: proxy for apt-get
 
- - name: yum update
-   yum: name=* state=latest
-   become: yes   
+- name: yum clean
+  shell: yum clean all
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: apt-get clean metadata
+  shell: apt-get clean
+  when: ansible_os_family == "Debian"
+  become: yes
+
+- name: yum upgrade
+  yum:
+    name: "*"
+    state: latest
+  environment: '{{ proxy | default ({}) }}'
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: apt-get upgrade
+  apt:
+    upgrade: yes
+    update_cache: yes
+  environment: '{{ proxy | default ({}) }}'
+  become: yes   
+  when: ansible_os_family == "Debian"
 
 # - name: configure ip forwarding
 #   template: src=./templates/sysctl.conf.j2 dest=/etc/sysctl.d/kubernetes.conf
 #   become: yes
 
- - name: disable selinux
-   selinux:
-     state: permissive
-     policy: targeted
-   become: yes
+- name: disable selinux
+  selinux:
+    state: permissive
+    policy: targeted
+  become: yes
+  when: ansible_os_family == "RedHat"
 
- - name: check if firewalld is installed
-   shell: "if systemctl status firewalld | grep -q loaded; then echo true; else echo false ; fi;"
-   register: firewalld_installed
-   changed_when: false
+- name: check if firewalld is installed
+  shell: "if systemctl status firewalld | grep -q loaded; then echo true; else echo false ; fi;"
+  register: firewalld_installed
+  changed_when: false
+  when: ansible_os_family == "RedHat"
 
- - name: disable firewalld
-   service: name=firewalld state=stopped enabled=no
-   become: yes
-   when: firewalld_installed == "true"
+- name: disable firewalld
+  service: name=firewalld state=stopped enabled=no
+  become: yes
+  when: firewalld_installed == "true" and ansible_os_family == "RedHat"
+
+- name: disable swap
+  shell: swapoff -a
+  become: yes
+
+- name: Flush iptables
+  shell: "iptables -F; iptables -X; iptables -t nat -F; iptables -t nat -X; iptables -t mangle -F; iptables -t mangle -X; iptables -P INPUT ACCEPT; iptables -P FORWARD ACCEPT; iptables -P OUTPUT ACCEPT"
+  become: yes
+    

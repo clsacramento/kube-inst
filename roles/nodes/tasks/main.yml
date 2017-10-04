@@ -1,4 +1,5 @@
 ---
+
 - name: Join node to cluster
-  shell: "kubeadm join {{ groups['master'][0] }}:6443 --token {{ hostvars[groups['master'][0]]['kubeadm_token'].stdout }}"
+  shell: "kubeadm reset && {{ hostvars[groups['master'][0]]['kubeadm_token'].stdout }}"
   become: yes

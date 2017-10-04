@@ -1,15 +1,10 @@
 ---
 # CNI network configuration
 
- - name: copy Calico yaml
+ - name: deploy Calico
    when: cni_network == "calico"
-   copy:
-     src: ../files/calico.yaml
-     dest: /tmp/.
-
- - name: deploy Calico template
-   when: cni_network == "calico"
-   shell: "kubectl apply -f /tmp/calico.yaml"
+   shell: "kubectl apply -f http://docs.projectcalico.org/v2.4/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
+   environment: '{{ proxy | default ({}) }}'
 
  - name: wait for Calico deployment
    when: cni_network == "calico"
@@ -19,15 +14,13 @@
    retries: 30
    delay: 10
 
- - name: copy Flannel yaml
+ - name: deploy Flannel
    when: cni_network == "flannel"
-   copy:
-     src: ../files/kube-flannel.yml
-     dest: /tmp/.
-
- - name: deploy Flannel template
-   when: cni_network == "flannel"
-   shell: "kubectl apply -f /tmp/kube-flannel.yml"
+   shell: "{{ item }}"
+   with_items:
+   - "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.8.0/Documentation/kube-flannel.yml"
+   - "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.8.0/Documentation/kube-flannel-rbac.yml"
+   environment: '{{ proxy | default ({}) }}'
    register: flannel
    changed_when: '"created" in flannel.stdout'
 
@@ -39,15 +32,9 @@
    retries: 30
    delay: 10
 
- - name: copy Weave yaml
+ - name: deploy Weave
    when: cni_network == "weave"
-   copy:
-     src: ../files/weave-kube-1.6.yml
-     dest: /tmp/.
-
- - name: deploy Weave template
-   when: cni_network == "weave"
-   shell: "kubectl apply -f /tmp/weave-kube-1.6.yml"
+   shell: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
    register: weave
    changed_when: '"created" in weave.stdout'
 

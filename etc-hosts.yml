@@ -1,6 +1,0 @@
----
-# Configure /etc/hosts for all nodes
-
- - hosts: all
-   roles:
-   - role: etc-hosts

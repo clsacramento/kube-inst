@@ -1,4 +1,4 @@
 ---
 - hosts: kube
   roles:
-  - common
+  - role: common
