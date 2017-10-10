@@ -8,6 +8,7 @@
       - name: uptime
         shell: uptime ; date ; sleep 3
         register: upt
+        changed_when: false
 
       - debug:
           var : upt

@@ -3,14 +3,14 @@
 
 - include: test.yml
 
-- include: common.yml
-
 - include: destroy.yml
+
+- include: common.yml
 
 - include: master.yml
 
 - include: node.yml
 
-#- include: post_deploy.yml
+- include: post_deploy.yml
 
-#- include: addons.yml
+- include: addons.yml

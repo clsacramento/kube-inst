@@ -13,14 +13,19 @@
    until: result.stdout == ""
    retries: 60
    delay: 10
+   changed_when: false
 
  - name: Check if DNS is working
    shell: "kubectl exec -ti busybox -- nslookup kubernetes.default"
-
- - name: Check busybox logs
-   shell: "kubectl logs busybox"
    register: result
+   changed_when: false
 
- - fail:
-     msg: "The DNS is not working."
-   when: "'can\'t resolve' in result.stdout"
+ - debug: var=result.stdout
+
+# - name: Check busybox logs
+#   shell: "kubectl logs busybox"
+#   register: result
+#
+# - fail:
+#     msg: "The DNS is not working."
+##   when: "'can\'t resolve' in result.stdout"

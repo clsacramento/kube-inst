@@ -28,6 +28,7 @@
    until: result.stdout == "7"
    retries: 60
    delay: 10
+   changed_when: false
 
  - name: Wait for pods to be in running state
    shell: "kubectl get pods -n kube-system | tail -n +2 | grep -v -w 'Running' | grep -v 'kube-dns' || true"
@@ -35,3 +36,4 @@
    until: result.stdout == ""
    retries: 60
    delay: 10
+   changed_when: false
