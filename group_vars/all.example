@@ -1,23 +1,28 @@
 #ntp server to configure cluster time
-ntp_servers: 172.16.1.5 
+#ntp_servers: 172.16.1.5 
 
 #default proxy
-proxy: http://proxy.sdc.hp.com:8080/
+#proxy: http://proxy.sdc.hp.com:8080/
 #proxy that will be configured for yum
-yum_proxy: http://172.16.1.5:3142/
+#yum_proxy: http://172.16.1.5:3142/
 
 # Choose CNI network
 # Possible values are calico, flannel, weave
 cni_network: weave
-# Uncomment if using flannel
+# Uncomment if using Flannel
 #network_cidr: 10.244.0.0/16
+# Uncomment if using Calico
+#network_cidr: 192.168.0.0/16
 
 
 # Kubernetes version
-kubernetes_version: v1.7.6
+kubernetes_version: v1.7.8
 
-#physical device on nodes to be used for GlusterFS
-#gluster_disk: /dev/vdb
+# Deploy monitoring
+deploy_monitoring: true
 
-#if true will deploy the guestbook app as an addon
-#deploy_guestbook: true
+# Deploy demo app
+deploy_demo_app: true
+
+# Deploys k8s from fresh install
+full_clean: true

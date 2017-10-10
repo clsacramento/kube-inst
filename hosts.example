@@ -2,11 +2,11 @@
 localhost ansible_connection=local
 
 [master]
-k8s-1 ansible_ssh_host=10.1.0.13
+master ansible_ssh_host=10.0.0.5
 
 [nodes]
-k8s-2 ansible_ssh_host=10.1.0.17
-k8s-3 ansible_ssh_host=10.1.0.7
+node1 ansible_ssh_host=10.0.0.6
+node2 ansible_ssh_host=10.0.0.7
 
 [kube:children]
 master

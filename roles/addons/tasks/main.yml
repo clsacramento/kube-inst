@@ -48,7 +48,6 @@
    shell: "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml"
    register: dashboard
    changed_when: '"created" in dashboard.stdout'
-   changed_when: false
 
  - name: wait for Dashboard deployment
    shell: "kubectl get pods -n kube-system | grep dashboard"

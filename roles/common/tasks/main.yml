@@ -43,10 +43,10 @@
   become: yes
   when: ansible_os_family == "Debian"
 
-- name: Clean docker images
-  shell: docker rmi $(docker images -q)
-  become: yes
-  when: full_clean is defined and full_clean
+#- name: Clean docker images
+#  shell: docker rmi $(docker images -q)
+#  become: yes
+#  when: full_clean is defined and full_clean
 
 - name: Remove packages
   package:

@@ -3,20 +3,36 @@
 
   tasks:
   
+  - name: Verify if kubeadm exists
+    shell: which kubeadm
+    register: kubeadm_result
+    failed_when: false
+    changed_when: false
+ 
+  - debug: var=kubeadm_result
+
   - name: Kubeadm reset
     shell: kubeadm reset
     become: yes
+    when: kubeadm_result.rc == 0
 
   - name: Remove .kube
     file:
       state: absent
       path: "{{ ansible_env.HOME }}/.kube"
+ 
+  - name: Verify if kubelet service exists
+    shell: systemctl status kubelet
+    register: kubelet_result
+    failed_when: false
+    changed_when: false
 
   - name: Restart kubelet
     systemd:
       name: kubelet
       state: restarted
     become: yes
+    when: '"not-found" not in kubelet_result.stdout'
 
   - name: Reboot
     shell: sleep 2 && shutdown -r now
@@ -24,13 +40,14 @@
     async: 1
     poll: 0
 
-#  - name: Wait for 30 seconds
-#    pause: seconds=30
-
   - name: Wait for host to come up
 #    local_action: shell ansible -u {{ ansible_user_id }} -m ping {{ inventory_hostname }}
 #    register: result
 #    until: result.rc == 0
 #    retries: 30
 #    delay: 10
-    local_action: wait_for host={{ ansible_default_ipv4.address }} port=22 state=started delay=10 timeout=120 
+    local_action: wait_for host={{ ansible_default_ipv4.address }} port=22 state=started delay=10
+
+  - name: Wait for 10 seconds
+    pause: seconds=10
+
