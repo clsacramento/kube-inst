@@ -1,0 +1,4 @@
+---
+- hosts: master
+  roles:
+  - role: post_deploy

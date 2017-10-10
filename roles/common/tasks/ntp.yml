@@ -1,0 +1,72 @@
+---
+# Installs and configure NTP
+#
+
+- name: Disable timesyncd
+  shell: timedatectl set-ntp no
+  become: yes
+
+- name: Install NTP
+  package:
+    name: ntp
+    state: latest
+  become: yes
+
+
+- name: Install ntpdate
+  package:
+    name: ntpdate
+    state: latest
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: Remove default NTP Servers
+  replace:
+    path: /etc/ntp.conf
+    regexp: '^server .*'
+    replace: ''
+  become: yes
+  when: ntp_servers is defined
+
+- name: Add internal NTP server
+  lineinfile: 
+    path: /etc/ntp.conf
+    regexp: '^server '
+    insertafter: "^# Use public servers from the pool.ntp.org project."
+    line: "server {{ ntp_servers | default('pool.ntp.org') }}"
+  become: yes
+  when: ntp_servers is defined
+
+- name: Make sure NTP is stopped in RedHat
+  systemd:
+    name: ntpd
+    state: stopped
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Make sure NTP is stopped in Debian
+  systemd:
+    name: ntp
+    state: stopped
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: First NTP sync
+  shell: ntpdate {{ ntp_servers | default('pool.ntp.org') }}
+  become: yes
+
+- name: Make sure NTP is started up in RedHat
+  systemd:
+    name: ntpd
+    state: started
+    enabled: yes
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Make sure NTP is started up in Debian
+  systemd:
+    name: ntp
+    state: started
+    enabled: yes
+  become: yes
+  when: ansible_os_family == "Debian"

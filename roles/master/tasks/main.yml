@@ -1,163 +1,39 @@
 ---
 # Master configuration
 
- - name: kubernetes/config KUBE_LOGTOSTDERR
-   lineinfile:
-     path: /etc/kubernetes/config
-     regexp: '^KUBE_LOGTOSTDERR='
-     line: 'KUBE_LOGTOSTDERR="--logtostderr=true"'
-   become: yes
+ - name: Generate config file
+   template:
+     src: "./templates/kubeadm.conf.j2"
+     dest: "{{ ansible_env.HOME }}/kubeadm.conf"
 
- - name: kubernetes/config KUBE_LOG_LEVEL
-   lineinfile:
-     path: /etc/kubernetes/config
-     regexp: '^KUBE_LOG_LEVEL='
-     line: 'KUBE_LOG_LEVEL="--v=0"'
+ - name: Run Kubeadm
+   shell: "kubeadm reset && kubeadm init --config {{ ansible_env.HOME }}/kubeadm.conf | grep 'kubeadm join --token'"
    become: yes
+   register: kubeadm_token
 
- - name: kubernetes/config KUBE_ALLOW_PRIV
-   lineinfile:
-     path: /etc/kubernetes/config
-     regexp: '^KUBE_ALLOW_PRIV='
-     line: 'KUBE_ALLOW_PRIV="--allow-privileged=true"'
-   become: yes
+ - name: Create .kube dir
+   file: 
+     path: "{{ ansible_env.HOME }}/.kube"
+     state: directory
 
- - name: kubernetes/config KUBE_MASTER
-   lineinfile:
-     path: /etc/kubernetes/config
-     regexp: '^KUBE_MASTER='
-     line: 'KUBE_MASTER="--master=http://{{ groups.master[0] }}:8080"'
-   become: yes
+ - name: Copy kubeconfig to .kube
+   shell: "sudo cp -i /etc/kubernetes/admin.conf {{ ansible_env.HOME }}/.kube/config"
 
- - name: /etc/etcd/etcd.conf ETCD_NAME
-   lineinfile:
-     path: /etc/etcd/etcd.conf
-     regexp: '^ETCD_NAME='
-     line: 'ETCD_NAME="{{ inventory_hostname }}"'
-   become: yes
+ - name: Change owner of kubeconfig
+   shell: "sudo chown $(id -u):$(id -g) {{ ansible_env.HOME }}/.kube/config"
 
- - name: /etc/etcd/etcd.conf ETCD_DATA_DIR
-   lineinfile:
-     path: /etc/etcd/etcd.conf
-     regexp: '^ETCD_DATA_DIR='
-     line: 'ETCD_DATA_DIR="/var/lib/etcd/default.etcd"'
-   become: yes
+ - name: Wait for pods to be created
+   shell: "kubectl get pods --all-namespaces | wc -l"
+   register: result
+   until: result.stdout == "7"
+   retries: 60
+   delay: 10
+   changed_when: false
 
- - name: /etc/etcd/etcd.conf ETCD_LISTEN_CLIENT_URLS
-   lineinfile:
-     path: /etc/etcd/etcd.conf
-     regexp: '^ETCD_LISTEN_CLIENT_URLS='
-     line: 'ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"'
-   become: yes
-
- - name: /etc/etcd/etcd.conf ETCD_ADVERTISE_CLIENT_URLS
-   lineinfile:
-     path: /etc/etcd/etcd.conf
-     regexp: '^ETCD_ADVERTISE_CLIENT_URLS='
-     line: 'ETCD_ADVERTISE_CLIENT_URLS="http://0.0.0.0:2379"'
-   become: yes
-
- - name: /etc/kubernetes/apiserver KUBE_API_ADDRESS
-   lineinfile:
-     path: /etc/kubernetes/apiserver
-     regexp: '^KUBE_API_ADDRESS='
-     line: 'KUBE_API_ADDRESS="--address=0.0.0.0"'
-   become: yes
-
-
- - name: /etc/kubernetes/apiserver KUBE_API_PORT
-   lineinfile:
-     path: /etc/kubernetes/apiserver
-     regexp: 'KUBE_API_PORT='
-     line: 'KUBE_API_PORT="--port=8080"'
-   become: yes
-
- - name: /etc/kubernetes/apiserver KUBELET_PORT
-   lineinfile:
-     path: /etc/kubernetes/apiserver
-     regexp: 'KUBELET_PORT='
-     line: 'KUBELET_PORT="--kubelet-port=10250"'
-   become: yes
-   
- - name: /etc/kubernetes/apiserver KUBE_ETCD_SERVERS
-   lineinfile: 
-     path: /etc/kubernetes/apiserver
-     regexp: '^KUBE_ETCD_SERVERS='
-     line: 'KUBE_ETCD_SERVERS="--etcd-servers=http://{{ inventory_hostname }}:2379"'
-   become: yes
-
- - name: /etc/kubernetes/apiserver KUBE_SERVICE_ADDRESSES
-   lineinfile:
-     path: /etc/kubernetes/apiserver
-     regexp: 'KUBE_SERVICE_ADDRESSES='
-     line: 'KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range={{ service_cluster_ip_range }}"'
-   become: yes
-
- - name: /etc/kubernetes/apiserver KUBE_ADMISSION_CONTROL
-   lineinfile:
-     path: /etc/kubernetes/apiserver
-     regexp: 'KUBE_ADMISSION_CONTROL='
-     line: 'KUBE_ADMISSION_CONTROL="--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota,DefaultStorageClass"'
-   become: yes
-
- - name: /etc/kubernetes/apiserver KUBE_API_ARGS
-   lineinfile:
-     path: /etc/kubernetes/apiserver
-     regexp: 'KUBE_API_ARGS='
-     line: 'KUBE_API_ARGS="--client-ca-file={{ cert_dir }}/ca.crt --tls-cert-file={{ cert_dir }}/server.cert --tls-private-key-file={{ cert_dir }}/server.key"'
-   become: yes
-
- - name: /etc/kubernetes/controller-manager KUBE_CONTROLLER_MANAGER_ARGS
-   lineinfile:
-     path: /etc/kubernetes/controller-manager
-     regexp: 'KUBE_CONTROLLER_MANAGER_ARGS='
-     line: 'KUBE_CONTROLLER_MANAGER_ARGS="--root-ca-file={{ cert_dir }}/ca.crt --service-account-private-key-file={{ cert_dir }}/server.key"'
-   become: yes
-
- - name: add config cert script
-   template: src=./templates/make-ca-cert.sh dest=/tmp/make-ca-cert.sh mode=755
-   become: yes
-
- - name: copy easy-rsa for cert generation
-   copy: src=./files/easy-rsa.tar.gz dest=/tmp/easy-rsa.tar.gz
-   become: yes
-
- - name: test args
-   debug: msg='"{{ hostvars[item].ansible_ssh_host }}" "IP:{{ hostvars[item].ansible_ssh_host }},IP:10.254.0.1"'
-   with_items:
-     - "{{ groups.master[0] }}"
-
- - name: generate k8s certificates
-   command: bash /tmp/make-ca-cert.sh "{{ hostvars[item].ansible_ssh_host }}" "IP:{{ hostvars[item].ansible_ssh_host }},IP:10.254.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local"
-   args:
-     creates: "{{ cert_dir }}"
-   with_items:
-     - "{{ groups.master[0] }}"
-   become: yes
-
- - name: Start and enable etcd
-   systemd: name=etcd state=started enabled=yes
-   become: yes
-
- - name: add network-config etcd script
-   template: src=./templates/etcd-network-config.sh dest=/tmp/etcd-network-config.sh mode=755
-   become: yes
-
- - name: set network/config in etcd
-   command: bash /tmp/etcd-network-config.sh
-   register: etcdnetconfig
-   changed_when: etcdnetconfig.rc != 0
-     
-   become: yes
-
- - name: Start and enable kube-apiserver
-   systemd: name=kube-apiserver state=started enabled=yes
-   become: yes
-
- - name: Start and enable kube-controller-manager
-   systemd: name=kube-controller-manager state=started enabled=yes
-   become: yes
-
- - name: Start and enable kube-scheduler
-   systemd: name=kube-scheduler state=started enabled=yes
-   become: yes
+ - name: Wait for pods to be in running state
+   shell: "kubectl get pods -n kube-system | tail -n +2 | grep -v -w 'Running' | grep -v 'kube-dns' || true"
+   register: result
+   until: result.stdout == ""
+   retries: 60
+   delay: 10
+   changed_when: false

@@ -6,7 +6,6 @@
 
  - name: copy first app file
    copy: src=./files/firstapp dest=/tmp/.
-                files/firstapp
    become: yes
 
  - name: build first app image

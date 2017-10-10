@@ -1,0 +1,136 @@
+---
+
+- include: preconf.yml
+- include: ntp.yml
+- include: etc-hosts.yml
+# - include: docker.yml
+
+# - name: Download latest kubectl
+#   shell: "https_proxy={{ proxy }} curl -LO https://storage.googleapis.com/kubernetes-release/release/$(https_proxy={{ proxy }} curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+
+# - name: Make the kubectl binary executable
+#   file:
+#     path: ./kubectl
+#     mode: 775
+
+# - name: Move the kubectl binary to PATH
+#   command: "mv ./kubectl /usr/local/bin/kubectl"
+#   become: yes
+
+- name: Install ebtables and ethtool
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+  - ebtables
+  - ethtool
+  become: yes
+
+- name: Install Docker for RedHat
+  yum:
+    name: docker
+    state: latest
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Install Docker for Debian
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+  - docker.io
+  - apt-transport-https
+  become: yes
+  when: ansible_os_family == "Debian"
+
+#- name: Clean docker images
+#  shell: docker rmi $(docker images -q)
+#  become: yes
+#  when: full_clean is defined and full_clean
+
+- name: Remove packages
+  package:
+    name: "{{ item }}"
+    state: absent
+    purge: yes
+  with_items:
+  - kubelet
+  - kubeadm
+  - kubectl
+  when: full_clean is defined and full_clean
+  become: yes
+
+- name: Add Kubernetes repo for RedHat
+  copy:
+    src: ./files/kubernetes.repo
+    dest: /etc/yum.repos.d/.
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Add apt key
+  apt_key:
+    url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+    state: present
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: Add Kubernetes repo for Debian
+  apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+  become: yes
+
+- name: Install packages
+  package:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+  - kubelet
+  - kubeadm
+  - kubectl
+  become: yes
+
+- name: create systemd docker.service
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+  become: yes
+
+- name: Add proxy to docker
+  template:
+    src: ./templates/http-proxy.conf.j2
+    dest: /etc/systemd/system/docker.service.d/http-proxy.conf
+  become: yes
+  when: proxy is defined
+  notify:
+  - Reload systemd
+  - Restart docker
+  - Restart kubelet
+
+#- name: /proc/sys/net/bridge/bridge-nf-call-iptables = 1
+#  shell: "echo 1 | tee /proc/sys/net/bridge/bridge-nf-call-iptables"
+#  become: yes
+
+#- name: Read docker cgroup
+#  shell: "docker info 2>/dev/null | grep -i cgroup | cut -d ' ' -f 3"
+#  register: docker_cgroup
+#  become: yes
+#  changed_when: false
+
+#- name: Verify kubelet cgroup
+#  shell: cat /etc/systemd/system/kubelet.service.d/10-kubeadm.conf | grep -i "kubelet_cgroup_args=" | cut -d '=' -f 4 | sed 's/"$//'
+#  register: kubelet_cgroup
+#  changed_when: false
+
+#- name: Sync kubelet cgroup with docker cgroup
+#  lineinfile:
+#    path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+#    regexp: '^Environment="KUBELET_CGROUP_ARGS=--cgroup-driver=*'
+#    line: 'Environment="KUBELET_CGROUP_ARGS=--cgroup-driver={{ docker_cgroup.stdout }}"'
+#  when: docker_cgroup.stdout != kubelet_cgroup.stdout
+#  become: yes
+#  notify:
+#  - Reload systemd
+#  - Restart kubelet

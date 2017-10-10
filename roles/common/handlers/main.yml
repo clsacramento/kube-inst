@@ -1,0 +1,19 @@
+---
+
+- name: Reload systemd
+  command: systemctl daemon-reload
+  become: yes
+
+- name: Restart docker
+  systemd:
+    name: docker
+    state: restarted
+    enabled: yes
+  become: yes
+
+- name: Restart kubelet
+  systemd:
+    state: restarted
+    name: kubelet
+    enabled: yes
+  become: yes

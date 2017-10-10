@@ -1,0 +1,6 @@
+---
+- hosts: master
+  roles: 
+  - role: master
+  tasks:
+  - include: roles/master/tasks/network.yml

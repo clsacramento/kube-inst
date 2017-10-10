@@ -1,0 +1,16 @@
+---
+# Deploy k8s
+
+- include: test.yml
+
+- include: destroy.yml
+
+- include: common.yml
+
+- include: master.yml
+
+- include: node.yml
+
+- include: post_deploy.yml
+
+- include: addons.yml

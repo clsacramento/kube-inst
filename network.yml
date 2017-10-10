@@ -1,0 +1,6 @@
+---
+# Install CNI network
+
+ - hosts: master
+   tasks:
+    - include: roles/master/tasks/network.yml
