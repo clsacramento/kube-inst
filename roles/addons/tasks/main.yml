@@ -81,29 +81,23 @@
    delay: 10
    changed_when: false
 
-      
-
-
 # Dashboard
-# - name: copy dashboard yamls
-#   copy: src=./files/dashboard dest=/tmp/.
-#
-# - name: deploy Dashboard addon
-#   shell: "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml"
-#   register: dashboard
-#   changed_when: '"created" in dashboard.stdout'
-#
-# - name: wait for Dashboard deployment
-#   shell: "kubectl get pods -n kube-system | grep dashboard"
-#   register: result
-#   until: result.stdout.find("Running") != -1
-#   retries: 30
-#   delay: 10
+ - name: copy Dashboard 
+   copy:
+     src: ./files/dashboard.yaml
+     dest: /tmp/dashboard.yaml
 
+ - name: deploy Dashboard
+   shell: "kubectl apply -f /tmp/dashboard.yaml"
+   register: dashboard
+   changed_when: '"created" in dashboard.stdout'
 
-
-
-
+ - name: wait for Dashboard deployment
+   shell: "kubectl get pods -n kube-system | grep kubernetes-dashboard"
+   register: result
+   until: result.stdout.find("Running") != -1
+   retries: 30
+   delay: 10
 
 # Demo App
 
@@ -118,7 +112,11 @@
 
  - name: wait for sock-shop deployment
    when: deploy_demo_app == true
-   shell: "while ! kubectl get pods -n sock-shop --no-headers=true | grep -iv running; do sleep 5; done"
+   shell: "kubectl get pods -n sock-shop --no-headers=true | grep -ivw running || true"
+   register: result
+   until: result.stdout == ""
+   retries: 60
+   delay: 10
    changed_when: false
 
 #
