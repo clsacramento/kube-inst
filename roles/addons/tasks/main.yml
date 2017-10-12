@@ -40,21 +40,65 @@
    delay: 10
    changed_when: false
 
-# Dashboard
- - name: copy dashboard yamls
-   copy: src=./files/dashboard dest=/tmp/.
+# Helm
+ - name: copy Helm
+   when: deploy_helm == true
+   copy:
+     src: ./files/helm.yaml
+     dest: /tmp/helm.yaml
 
- - name: deploy Dashboard addon
-   shell: "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml"
-   register: dashboard
-   changed_when: '"created" in dashboard.stdout'
+ - name: deploy Helm service
+   when: deploy_helm == true
+   shell: "kubectl create -f /tmp/helm.yaml"
+   register: result
+   changed_when: '"created" in result.stdout'
 
- - name: wait for Dashboard deployment
-   shell: "kubectl get pods -n kube-system | grep dashboard"
+ - name: Download and unpack Helm client
+   when: deploy_helm == true
+   unarchive:
+     src: https://kubernetes-helm.storage.googleapis.com/helm-v2.6.2-linux-amd64.tar.gz
+     dest: /tmp
+     remote_src: yes
+
+ - name: Copy Helm client to PATH
+   when: deploy_helm == true
+   copy:
+     src: /tmp/linux-amd64/helm
+     dest: /usr/bin/helm
+     remote_src: yes
+   become: yes
+   
+ - name: Initialize Helm
+   when: deploy_helm == true
+   shell: "helm init --service-account helm"
+
+ - name: wait for Helm service deployment
+   when: deploy_helm == true
+   shell: "kubectl get pods -n kube-system | grep tiller-deploy"
    register: result
    until: result.stdout.find("Running") != -1
-   retries: 30
+   retries: 60
    delay: 10
+   changed_when: false
+
+      
+
+
+# Dashboard
+# - name: copy dashboard yamls
+#   copy: src=./files/dashboard dest=/tmp/.
+#
+# - name: deploy Dashboard addon
+#   shell: "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml"
+#   register: dashboard
+#   changed_when: '"created" in dashboard.stdout'
+#
+# - name: wait for Dashboard deployment
+#   shell: "kubectl get pods -n kube-system | grep dashboard"
+#   register: result
+#   until: result.stdout.find("Running") != -1
+#   retries: 30
+#   delay: 10
 
 
 
@@ -74,7 +118,7 @@
 
  - name: wait for sock-shop deployment
    when: deploy_demo_app == true
-   shell: "while ! kubectl get pods -n sock-shop | grep -iq running; do sleep 5; done"
+   shell: "while ! kubectl get pods -n sock-shop --no-headers=true | grep -iv running; do sleep 5; done"
    changed_when: false
 
 #
