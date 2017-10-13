@@ -83,16 +83,19 @@
 
 # Dashboard
  - name: copy Dashboard 
+   when: deploy_dashboard == true
    copy:
      src: ./files/dashboard.yaml
      dest: /tmp/dashboard.yaml
 
  - name: deploy Dashboard
+   when: deploy_dashboard == true
    shell: "kubectl apply -f /tmp/dashboard.yaml"
    register: dashboard
    changed_when: '"created" in dashboard.stdout'
 
  - name: wait for Dashboard deployment
+   when: deploy_dashboard == true
    shell: "kubectl get pods -n kube-system | grep kubernetes-dashboard"
    register: result
    until: result.stdout.find("Running") != -1

@@ -8,9 +8,9 @@
 
 # Choose CNI network
 # Possible values are calico, flannel, weave
-cni_network: weave
+cni_network: flannel
 # Uncomment if using Flannel
-#network_cidr: 10.244.0.0/16
+network_cidr: 10.244.0.0/16
 # Uncomment if using Calico
 #network_cidr: 192.168.0.0/16
 
@@ -21,8 +21,14 @@ kubernetes_version: v1.7.8
 # Deploy monitoring
 deploy_monitoring: true
 
+# Deploy helm
+deploy_helm: true
+
+# Deploy Dashboard
+deploy_dashboard: true
+
 # Deploy demo app
 deploy_demo_app: true
 
 # Deploys k8s from fresh install
-full_clean: true
+full_clean: false
