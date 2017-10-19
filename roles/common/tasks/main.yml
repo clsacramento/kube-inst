@@ -26,6 +26,10 @@
   - ethtool
   become: yes
 
+- name: /proc/sys/net/bridge/bridge-nf-call-iptables = 1
+  shell: "sysctl net.bridge.bridge-nf-call-iptables=1"
+  become: yes
+
 - name: Install Docker for RedHat
   yum:
     name: docker
