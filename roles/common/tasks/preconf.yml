@@ -67,6 +67,11 @@
   shell: "iptables -F; iptables -X; iptables -t nat -F; iptables -t nat -X; iptables -t mangle -F; iptables -t mangle -X; iptables -P INPUT ACCEPT; iptables -P FORWARD ACCEPT; iptables -P OUTPUT ACCEPT"
   become: yes
 
+- name: /proc/sys/net/bridge/bridge-nf-call-iptables = 1
+  shell: "sysctl net.bridge.bridge-nf-call-iptables=1"
+  become: yes
+  when: ansible_os_family == "Debian"
+
 - name: check if network manager is installed
   when: cni_network == "calico" and ansible_os_family == "Debian"
   shell: "if systemctl status NetworkManager.service | grep -q loaded; then echo true; else echo false; fi;"
