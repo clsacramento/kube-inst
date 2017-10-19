@@ -22,9 +22,8 @@
       path: "{{ ansible_env.HOME }}/.kube"
  
   - name: Verify if kubelet service exists
-    shell: systemctl status kubelet
-    register: kubelet_result
-    failed_when: false
+    shell: "if systemctl status firewalld | grep -q loaded; then echo true; else echo false ; fi;"
+    register: kubelet_installed
     changed_when: false
 
   - name: Restart kubelet
@@ -32,7 +31,7 @@
       name: kubelet
       state: restarted
     become: yes
-    when: '"not-found" not in kubelet_result.stdout'
+    when: kubelet_installed == "true"
 
   - name: Reboot
     shell: sleep 2 && shutdown -r now
