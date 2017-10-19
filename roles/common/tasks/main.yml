@@ -109,10 +109,6 @@
   - Restart docker
   - Restart kubelet
 
-#- name: /proc/sys/net/bridge/bridge-nf-call-iptables = 1
-#  shell: "echo 1 | tee /proc/sys/net/bridge/bridge-nf-call-iptables"
-#  become: yes
-
 #- name: Read docker cgroup
 #  shell: "docker info 2>/dev/null | grep -i cgroup | cut -d ' ' -f 3"
 #  register: docker_cgroup

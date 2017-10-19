@@ -41,11 +41,6 @@
     poll: 0
 
   - name: Wait for host to come up
-#    local_action: shell ansible -u {{ ansible_user_id }} -m ping {{ inventory_hostname }}
-#    register: result
-#    until: result.rc == 0
-#    retries: 30
-#    delay: 10
     local_action: wait_for host={{ ansible_default_ipv4.address }} port=22 state=started delay=10
 
   - name: Wait for 10 seconds

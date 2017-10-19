@@ -3,7 +3,7 @@
 
  - name: deploy Calico
    when: cni_network == "calico"
-   shell: "kubectl apply -f http://docs.projectcalico.org/v2.4/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
+   shell: "kubectl apply -f http://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
    environment: '{{ proxy | default ({}) }}'
 
  - name: wait for Calico deployment

@@ -7,7 +7,7 @@
      dest: "{{ ansible_env.HOME }}/kubeadm.conf"
 
  - name: Run Kubeadm
-   shell: "kubeadm reset && kubeadm init --config {{ ansible_env.HOME }}/kubeadm.conf | grep 'kubeadm join --token'"
+   shell: "kubeadm init --config {{ ansible_env.HOME }}/kubeadm.conf | grep 'kubeadm join --token'"
    become: yes
    register: kubeadm_token
 
