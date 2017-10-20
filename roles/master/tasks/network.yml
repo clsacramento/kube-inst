@@ -48,3 +48,6 @@
    retries: 60
    delay: 10
    changed_when: false
+
+ - name: Wait for 10 seconds
+   pause: seconds=10

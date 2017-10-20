@@ -66,8 +66,9 @@
      src: /tmp/linux-amd64/helm
      dest: /usr/bin/helm
      remote_src: yes
+     mode: 0755
    become: yes
-   
+  
  - name: Initialize Helm
    when: deploy_helm == true
    shell: "helm init --service-account helm"

@@ -3,3 +3,6 @@
 - name: Join node to cluster
   shell: "{{ hostvars[groups['master'][0]]['kubeadm_token'].stdout }}"
   become: yes
+
+- name: Wait for 10 seconds
+  pause: seconds=10
