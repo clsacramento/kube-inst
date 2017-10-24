@@ -4,7 +4,7 @@
  - name: deploy Calico
    when: cni_network == "calico"
    shell: "kubectl apply -f http://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
-   environment: '{{ proxy | default ({}) }}'
+   environment: '{{ proxy_env | default ({}) }}'
 
  - name: wait for Calico deployment
    when: cni_network == "calico"
@@ -17,11 +17,11 @@
 
  - name: deploy Flannel
    when: cni_network == "flannel"
+   environment: '{{ proxy_env | default ({}) }}'
    shell: "{{ item }}"
    with_items:
    - "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.8.0/Documentation/kube-flannel.yml"
    - "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.8.0/Documentation/kube-flannel-rbac.yml"
-   environment: '{{ proxy | default ({}) }}'
    register: flannel
    changed_when: '"created" in flannel.stdout'
 
@@ -37,6 +37,7 @@
  - name: deploy Weave
    when: cni_network == "weave"
    shell: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+   environment: '{{ proxy_env | default ({}) }}'
    register: weave
    changed_when: '"created" in weave.stdout'
 

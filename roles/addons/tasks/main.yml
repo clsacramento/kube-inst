@@ -59,6 +59,7 @@
      src: https://kubernetes-helm.storage.googleapis.com/helm-v2.6.2-linux-amd64.tar.gz
      dest: /tmp
      remote_src: yes
+   environment: '{{ proxy_env | default ({}) }}'
 
  - name: Copy Helm client to PATH
    when: deploy_helm == true
@@ -72,6 +73,7 @@
  - name: Initialize Helm
    when: deploy_helm == true
    shell: "helm init --service-account helm"
+   environment: '{{ proxy_env | default ({}) }}'
 
  - name: wait for Helm service deployment
    when: deploy_helm == true
@@ -111,6 +113,7 @@
    with_items:
    - "kubectl create namespace sock-shop"
    - 'kubectl apply -n sock-shop -f "https://github.com/microservices-demo/microservices-demo/blob/master/deploy/kubernetes/complete-demo.yaml?raw=true"'
+   environment: '{{ proxy_env | default ({}) }}'
    register: sock_shop
    changed_when: '"created" in sock_shop.stdout'
 

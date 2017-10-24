@@ -21,11 +21,3 @@
    changed_when: false
 
  - debug: var=result.stdout
-
-# - name: Check busybox logs
-#   shell: "kubectl logs busybox"
-#   register: result
-#
-# - fail:
-#     msg: "The DNS is not working."
-##   when: "'can\'t resolve' in result.stdout"
