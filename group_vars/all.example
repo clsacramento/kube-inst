@@ -35,3 +35,6 @@ full_clean: false
 
 # Deploy federation apiserver and controller manager on this host
 deploy_federation: true
+
+# Directory containing all kubeconfig files for federated clusters
+federation_kubeconfigs_path = /tmp/clusters
