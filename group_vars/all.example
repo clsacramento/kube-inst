@@ -32,3 +32,6 @@ deploy_demo_app: true
 
 # Deploys k8s from fresh install
 full_clean: false
+
+# Deploy federation apiserver and controller manager on this host
+deploy_federation: true

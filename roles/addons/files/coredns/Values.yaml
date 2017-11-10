@@ -1,0 +1,10 @@
+isClusterService: false
+serviceType: "NodePort"
+middleware:
+  kubernetes:
+    enabled: false
+  etcd:
+    enabled: true
+    zones:
+    - "example.com."
+    endpoint: "http://etcd-cluster-client:2379"

@@ -65,7 +65,7 @@
    when: deploy_helm == true
    copy:
      src: /tmp/linux-amd64/helm
-     dest: /usr/bin/helm
+     dest: /usr/local/bin
      remote_src: yes
      mode: 0755
    become: yes
@@ -125,6 +125,121 @@
    retries: 60
    delay: 10
    changed_when: false
+
+# Federation
+ - name: Download and unpack kubefed
+   when: deploy_federation == true
+   unarchive:
+     src: "https://storage.googleapis.com/kubernetes-release/release/{{ kubernetes_version }}/kubernetes-client-linux-amd64.tar.gz"
+     dest: /tmp
+     remote_src: yes
+   environment: '{{ proxy_env | default ({}) }}'
+
+ - name: Copy kubefed to PATH
+   when: deploy_federation == true
+   copy:
+     src: /tmp/kubernetes/client/bin/kubefed
+     dest: /usr/local/bin
+     remote_src: yes
+     mode: 0755
+   become: yes
+
+ - name: Rename current context
+   when: deploy_federation == true
+   shell: "kubectl config rename-context kubernetes-admin@kubernetes kubernetes"
+
+ - name: Use host-cluster context
+   when: deploy_federation == true
+   shell: "kubectl config use-context kubernetes"
+ 
+ - name: Clone etcd-repo
+   when: deploy_federation == true
+   git:
+     repo: 'https://github.com/coreos/etcd-operator.git'
+     dest: /tmp/etcd-operator
+   environment: '{{ proxy_env | default ({}) }}'
+
+ - name: Create RBAC rules for etcd-operator
+   when: deploy_federation == true
+   shell: /tmp/etcd-operator/example/rbac/create_role.sh
+
+ - name: Deploy etcd-operator
+   when: deploy_federation == true
+   shell: "kubectl create -f /tmp/etcd-operator/example/deployment.yaml"
+
+ - name: Wait for etcd operator to create a Kubernetes Custom Resource Definition (CRD)
+   when: deploy_federation == true
+   shell: "kubectl get customresourcedefinitions"
+   register: etcd_operator_crd
+   until: etcd_operator_crd.stdout != ""
+   retries: 60
+   delay: 10
+   changed_when: false
+
+ - name: Deploy etcd-operator
+   when: deploy_federation == true
+   shell: "kubectl create -f /tmp/etcd-operator/example/example-etcd-cluster.yaml"
+
+ - name: Copy CoreDNS configuration
+   when: deploy_federation == true
+   copy:
+     src: ./files/coredns/Values.yaml
+     dest: /tmp/Values.yaml
+
+ - name: Deploy CoreDNS
+   when: deploy_federation == true
+   shell: "helm install --name coredns -f /tmp/Values.yaml stable/coredns"
+
+ - name: Wait for CoreDNS deployment
+   when: deploy_federation == true
+   shell: "kubectl get pods --no-headers=true | grep coredns | grep -ivw running || true"
+   register: result
+   until: result.stdout == ""
+   retries: 60
+   delay: 10
+   changed_when: false
+
+ - name: Get CoreDNS NodePort
+   when: deploy_federation == true
+   shell: "kubectl get svc | grep coredns | awk {'print $5'} | cut -f2 -d ':' | cut -f1 -d '/'"
+   register: coredns_nodeport
+
+ - name: Copy CoreDNS provider configuration
+   when: deploy_federation == true
+   template:
+    src: ./templates/coredns-provider.conf.j2
+    dest: /tmp/coredns-provider.conf
+
+ - name: Deploy federation
+   when: deploy_federation == true
+   shell: "kubefed init federation --host-cluster-context='kubernetes' --dns-provider='coredns' --dns-provider-config='/tmp/coredns-provider.conf' --dns-zone-name='example.com.' --api-server-service-type='NodePort' --etcd-persistent-storage=false"
+
+ - name: Wait for federation deployment
+   when: deploy_federation == true
+   shell: "kubectl get pods -n federation-system --no-headers=true | grep -ivw running || true"
+   register: result
+   until: result.stdout == ""
+   retries: 60
+   delay: 10
+   changed_when: false
+
+# TODO
+# - name: Merge clusters kubeconfig to host-cluster
+
+# - name: Join clusters to federation
+
+# - name: Wait for clusters to become ready
+#   when: deploy_federation == true
+#   shell: "kubectl get clusters --context=federation --no-headers=true | grep -ivw ready || true"
+#   register: result
+#   until: result.stdout == ""
+#   retries: 60
+#   delay: 10
+#   changed_when: false
+
+   
+   
+
 
 #
 #

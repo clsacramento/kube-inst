@@ -1,0 +1,4 @@
+[Global]
+etcd-endpoints = http://etcd-cluster-client:2379
+zones = example.com.
+coredns-endpoints = {{ hostvars[groups['nodes'][0]].ansible_ssh_host }}:{{ hostvars[groups['master'][0]]['coredns_nodeport'].stdout }}
