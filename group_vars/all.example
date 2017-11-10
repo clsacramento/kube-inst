@@ -37,4 +37,4 @@ full_clean: false
 deploy_federation: true
 
 # Directory containing all kubeconfig files for federated clusters
-federation_kubeconfigs_path = /tmp/clusters
+federation_kubeconfigs_path: /tmp/clusters
