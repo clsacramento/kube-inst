@@ -56,7 +56,7 @@
  - name: Download and unpack Helm client
    when: deploy_helm == true
    unarchive:
-     src: https://kubernetes-helm.storage.googleapis.com/helm-v2.6.2-linux-amd64.tar.gz
+     src: https://storage.googleapis.com/kubernetes-helm/helm-v2.7.0-linux-amd64.tar.gz
      dest: /tmp
      remote_src: yes
    environment: '{{ proxy_env | default ({}) }}'
