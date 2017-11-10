@@ -224,8 +224,14 @@
    changed_when: false
 
 # TODO
-# - name: Merge clusters kubeconfig to host-cluster
-
+ - name: Copy merge script
+   copy:
+     src: ../files/kubeconfig_merge.py
+     dest: /tmp/kubeconfig_merge.py
+     
+ - name: Merge clusters kubeconfig to host-cluster
+   shell: python /tmp/kubeconfig_merge.py {{ ansible_env.HOME }} {{ item }}
+   with_fileglob: "{{ federation_kubeconfigs_path }}/*"
 # - name: Join clusters to federation
 
 # - name: Wait for clusters to become ready
