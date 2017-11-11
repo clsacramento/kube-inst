@@ -246,7 +246,30 @@
    delay: 10
    changed_when: false
 
-   
+# Traefik ingress
+ - name: Create RBAC rules for the traefik ingress controller
+   when: deploy_ingress == true
+   shell: "kubectl apply -f https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/traefik-rbac.yaml"
+   environment: '{{ proxy_env | default ({}) }}'
+
+ - name: Deploy Traefik ingress using DeamonSet
+   when: deploy_ingress == true
+   shell: "kubectl apply -f https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/traefik-ds.yaml"
+   environment: '{{ proxy_env | default ({}) }}'
+
+ - name: Wait for Traefik pods to become ready
+   when: deploy_ingress == true
+   shell: "kubectl get pods --context=kubernetes --no-headers=true | grep -i traefik | grep -ivw running || true"
+   register: result
+   until: result.stdout == ""
+   retries: 60
+   delay: 10
+   changed_when: false
+
+ - name: Deploy Traefik ingress UI
+   when: deploy_ingress == true
+   shell: "kubectl apply -f https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/ui.yaml"
+   environment: '{{ proxy_env | default ({}) }}'
    
 
 

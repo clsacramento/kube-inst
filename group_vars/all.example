@@ -38,3 +38,6 @@ deploy_federation: true
 
 # Directory containing all kubeconfig files for federated clusters
 federation_kubeconfigs_path: /tmp/clusters
+
+# Deploy ingress
+deploy_ingress: true
