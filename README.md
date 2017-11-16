@@ -1,4 +1,5 @@
 # Install Kubernetes
+This is an ansible script to deploy kubernetes on bare-metal servers. Kubernetes will be installed using kubeadm tool. This means that all kubernetes services will be running in docker containers. This installation includes support for corporate proxys.
 
 ## Prerequisites
 * This was tested on nodes running CentOS 7.x and Ubuntu 16.04.
@@ -23,3 +24,17 @@ cd kube-inst
 ansible-playbook -i hosts deploy.yml
 ~~~
 
+### Supported networks
+The networking plugin can be specified in the ```./groupvars/all``` file.
+* Flannel
+* Weave
+* Calico (needs testing)
+
+### Included addons
+The addons can be enabled or disabled individually in the ```./groupvars/all``` file.
+* Grafana, Heapster and InfluxDB
+* Helm
+* Dashboard
+* Demo app
+* Federation control plane
+* Traefik ingress
