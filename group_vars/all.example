@@ -1,10 +1,19 @@
 #ntp server to configure cluster time
-#ntp_servers: 172.16.1.5 
+ntp_servers: 172.16.1.5 
 
 #default proxy
+proxy: 'http://proxy.sdc.hp.com:8080/'
+no_proxy: 'localhost,127.0.0.1,10.1.0.6,10.1.0.14,10.1.0.15,10.1.0.18'
+proxy_env:
+  http_proxy: '{{ proxy }}'
+  HTTP_PROXY: '{{ proxy }}'
+  https_proxy: '{{ proxy }}'
+  HTTPS_PROXY: '{{ proxy }}'
+  no_proxy: '{{ no_proxy }}'
+  NO_PROXY: '{{ no_proxy }}'
 #proxy: http://proxy.sdc.hp.com:8080/
 #proxy that will be configured for yum
-#yum_proxy: http://172.16.1.5:3142/
+yum_proxy: http://172.16.1.5:3142/
 
 # Choose CNI network
 # Possible values are calico, flannel, weave
@@ -16,7 +25,7 @@ network_cidr: 10.244.0.0/16
 
 
 # Kubernetes version
-kubernetes_version: v1.7.8
+kubernetes_version: v1.8.3
 
 # Deploy monitoring
 deploy_monitoring: true
@@ -31,13 +40,13 @@ deploy_dashboard: true
 deploy_demo_app: true
 
 # Deploys k8s from fresh install
-full_clean: false
+full_clean: true
 
-# Deploy federation apiserver and controller manager on this host
-deploy_federation: true
+# Deploy federation components
+deploy_federation: false
 
 # Directory containing all kubeconfig files for federated clusters
 federation_kubeconfigs_path: /tmp/clusters
-
-# Deploy ingress
-deploy_ingress: true
+#
+# # Deploy ingress
+deploy_ingress: false
