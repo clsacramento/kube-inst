@@ -22,7 +22,7 @@ cd kube-inst
 ### All in one
 
 ~~~
-ansible-playbook -i hosts kube-deploy.yml
+ansible-playbook -i hosts deploy.yml
 ~~~
 
 ### Or just run each playbook one at a time
