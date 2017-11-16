@@ -1,9 +1,9 @@
 # Install Kubernetes
 
 ## Prerequisites
-This was tested on nodes running CentOS 7.x and Ubuntu 16.04.
-Nodes networking should be configured.
-The nodes can be accessed with the same SSH key.
+* This was tested on nodes running CentOS 7.x and Ubuntu 16.04.
+* Nodes networking should be configured.
+* The nodes can be accessed with the same SSH key.
 
 These should be run on the master node or a jumpbox:
 ~~~
