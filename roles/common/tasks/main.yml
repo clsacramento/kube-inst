@@ -4,15 +4,6 @@
 - include: ntp.yml
 - include: etc-hosts.yml
 
-- name: Install ebtables and ethtool
-  package:
-    name: "{{ item }}"
-    state: latest
-  with_items:
-  - ebtables
-  - ethtool
-  become: yes
-
 - name: Install Docker for RedHat
   yum:
     name: docker
@@ -20,15 +11,46 @@
   become: yes
   when: ansible_os_family == "RedHat"
 
-- name: Install Docker for Debian
-  apt:
+- name: Install curl and apt-transport-https
+  package:
     name: "{{ item }}"
     state: latest
   with_items:
-  - docker.io
+  - curl
   - apt-transport-https
   become: yes
   when: ansible_os_family == "Debian"
+
+- name: Add docker repo key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: Add docker repo
+  shell:
+    cmd: |
+      cat <<EOF >/etc/apt/sources.list.d/docker.list
+      deb https://download.docker.com/linux/$(lsb_release -si | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) stable
+      EOF
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install Docker for Debian
+  shell: apt-get update && apt-get install -y docker-ce=$(apt-cache madison docker-ce | grep 17.03 | head -1 | awk '{print $3}')
+  become: yes
+  when: ansible_os_family == "Debian"
+
+#- name: Change docker cgroup driver to systemd
+#  shell:
+#    cmd: |
+#      cat << EOF > /etc/docker/daemon.json
+#      {
+#        "exec-opts": ["native.cgroupdriver=systemd"]
+#      }
+#      EOF
+#  become: yes
 
 #- name: Clean docker images
 #  shell: docker rmi $(docker images -q)
@@ -47,25 +69,50 @@
   become: yes
 
 - name: Add Kubernetes repo for RedHat
-  copy:
-    src: ./files/kubernetes.repo
-    dest: /etc/yum.repos.d/.
+  shell:
+    cmd: |
+      cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+      [kubernetes]
+      name=Kubernetes
+      baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+      enabled=1
+      gpgcheck=1
+      repo_gpgcheck=1
+      gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+      EOF
+#  copy:
+#     src: ./files/kubernetes.repo
+#     dest: /etc/yum.repos.d/kubernetes.repo
   become: yes
   when: ansible_os_family == "RedHat"
 
-#- name: Add Kubernetes repo for RedHat
-#  yum_repository:
-#    name: kubernetes
-#    description: Kubernetes
-#    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-#    enabled: yes
-#    gpgcheck: yes
-#    repo_gpgcheck: yes
-#    gpgkey:
-#    - https://packages.cloud.google.com/yum/doc/yum-key.gpg
-#    - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-#  when: ansible_os_family == "RedHat"
-#  become: yes
+- name: Update cache
+  shell: yum makecache fast
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: setenforce = 0
+  shell: setenforce 0
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: net.bridge.bridge-nf-call-iptables = 1
+  shell:
+    cmd: |
+      cat <<EOF >  /etc/sysctl.d/k8s.conf
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.bridge.bridge-nf-call-iptables = 1
+      EOF
+#  copy:
+#    src: ./files/k8s.conf
+#    dest: /etc/sysctl.d/k8s.conf
+  become: yes
+  when: ansible_os_family == "RedHat"
+    
+- name: Update sysctl
+  shell: sysctl --system
+  become: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Add apt key
   apt_key:
@@ -82,7 +129,7 @@
   when: ansible_os_family == "Debian"
   become: yes
 
-- name: Install packages
+- name: Install kubernetes packages
   package:
     name: "{{ item }}"
     state: installed
@@ -121,10 +168,6 @@
     state: restarted
     name: kubelet
     enabled: yes
-  become: yes
-
-- name: /proc/sys/net/bridge/bridge-nf-call-iptables = 1
-  shell: "sysctl net.bridge.bridge-nf-call-iptables=1"
   become: yes
 
 #- name: Read docker cgroup

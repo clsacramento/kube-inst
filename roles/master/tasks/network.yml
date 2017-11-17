@@ -15,13 +15,18 @@
    delay: 10
    changed_when: false
 
+ - name: set net.bridge.bridge-nf-call-iptables=1
+   shell: "sysctl net.bridge.bridge-nf-call-iptables=1"
+   become: yes
+   when: cni_network == "flannel" or cni_network == "weave"
+
  - name: deploy Flannel
    when: cni_network == "flannel"
    environment: '{{ proxy_env | default ({}) }}'
-   shell: "{{ item }}"
-   with_items:
-   - "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.8.0/Documentation/kube-flannel.yml"
-   - "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.8.0/Documentation/kube-flannel-rbac.yml"
+   shell: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.0/Documentation/kube-flannel.yml"
+#   with_items:
+#   - "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.8.0/Documentation/kube-flannel.yml"
+#   - "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.8.0/Documentation/kube-flannel-rbac.yml"
    register: flannel
    changed_when: '"created" in flannel.stdout'
 

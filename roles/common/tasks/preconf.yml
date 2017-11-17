@@ -1,5 +1,4 @@
 ---
-##NB: I didnt test 'cause I did this part manually
 
 - name: configure yum proxy
   lineinfile:
@@ -35,13 +34,6 @@
   environment: '{{ proxy_env | default ({}) }}'
   become: yes   
   when: ansible_os_family == "Debian"
-
-- name: disable selinux
-  selinux:
-    state: permissive
-    policy: targeted
-  become: yes
-  when: ansible_os_family == "RedHat"
 
 - name: check if firewalld is installed
   shell: "if systemctl status firewalld | grep -q loaded; then echo true; else echo false ; fi;"
