@@ -87,7 +87,7 @@
   when: ansible_os_family == "RedHat"
 
 - name: Update cache
-  shell: yum makecache fast
+  shell: yum makecache fast -y
   become: yes
   when: ansible_os_family == "RedHat"
 
