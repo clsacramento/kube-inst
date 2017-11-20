@@ -9,14 +9,15 @@ def read_kubeconfig(filepath):
 def merge(d1,d2):
   merged = d1.copy()
   for key,value in d2.items():
+    print key, type(value)
     if type(value) is list:
       merged[key] = d1[key] + value
     elif type(value) is dict:
-      merged[key] = merge(d1,d2)
+      merged[key] = merge(d1[key],value)
     else:
       merged[key] = d1[key]
   return merged
-    
+
 def kubeconfig_save(kubeconfig_dict,filepath):
   with io.open(filepath,'w') as f:
     yaml.dump(kubeconfig_dict, f, default_flow_style=False)
