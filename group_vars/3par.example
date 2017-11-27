@@ -1,0 +1,9 @@
+3par_api_url: https://172.30.0.239:8080/api/v1
+3par_user: stackato
+3par_password: stackato
+3par_san_ip: 172.30.0.239
+3par_san_login: stackato
+3par_san_password: stackato
+3par_cpg: stackato-esx
+3par_iscsi_ip: 172.16.105.30
+3par_iscsi_ips: 172.16.105.30,172.16.105.31,172.16.105.32,172.16.105.33

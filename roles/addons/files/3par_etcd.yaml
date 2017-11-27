@@ -1,0 +1,67 @@
+---
+# ------------------- etcd deployment ------------------- #
+
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  labels:
+    k8s-app: 3par-etcd
+  name: 3par-etcd
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: 3par-etcd
+  template:
+    metadata:
+      labels:
+        k8s-app: 3par-etcd
+    spec:
+      containers:
+      - name: 3par-etcd
+        image: quay.io/coreos/etcd:v2.2.0
+        ports:
+        - containerPort: 2379
+          protocol: TCP
+        - containerPort: 2380
+          protocol: TCP
+        - containerPort: 4001
+          protocol: TCP
+        args:
+          - -name etcd0
+          - -advertise-client-urls http://${HostIP}:2379,http://${HostIP}:4001 \
+          - -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 \
+          - -initial-advertise-peer-urls http://${HostIP}:2380 \
+          - -listen-peer-urls http://0.0.0.0:2380 \
+          - -initial-cluster-token etcd-cluster-1 \
+          - -initial-cluster etcd0=http://${HostIP}:2380 \
+          - -initial-cluster-state new
+        volumeMounts:
+        - mountPath: /etc/ssl/certs
+          name: crt-volume
+      volumes:
+      - name: crt-volume
+        emptyDir: {}
+      # Comment the following tolerations if etcd must not be deployed on master
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+
+---
+# ------------------- Dashboard Service ------------------- #
+
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    k8s-app: 3par-etcd
+  name: 3par-etcd
+  namespace: kube-system
+spec:
+  ports:
+  - port: 2379
+    targetPort: 2379 
+  selector:
+    k8s-app: 3par-etcd
+  type: NodePort

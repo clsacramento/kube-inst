@@ -2,3 +2,8 @@
 - hosts: master
   roles: 
   - role: addons
+
+- hosts: all
+  tasks:
+   - include: roles/addons/tasks/3parplugin.yml
+  when: "{{ 3par_plugin | default(False) }}"

@@ -50,3 +50,6 @@ federation_kubeconfigs_path: /tmp/clusters
 #
 # # Deploy ingress
 deploy_ingress: false
+
+#Configure 3par plugin for docker
+3par_plugin: false

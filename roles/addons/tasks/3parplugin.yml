@@ -1,0 +1,19 @@
+- name: Create 3par plugin directory
+  file:
+    path: /etc/hpedockerplugin
+    state: directory
+  become: yes
+
+- name: Set 3par IP
+  set_fact:
+    3par_ip: {{ hostvars[invetory_hostname].ansible_ssh_host }}
+
+- name: Copy 3par plugin configuration
+  template:
+    src: ./templates/3parplugin.conf
+    dest: /etc/hpedockerplugin/hpe.conf
+  become: yes
+
+- name: Install docker plugin
+  shell: docker plugin install store/hpestorage/hpedockervolumeplugin:2.0.1 --alias hpe
+  become: yes
