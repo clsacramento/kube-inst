@@ -71,6 +71,8 @@
     - yum-utils 
     - device-mapper-persistent-data 
     - lvm2
+  become: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Setup yum repo for docker
   shell: "yum-config-manager --add-repo {{ centos_docker_repo }}"
