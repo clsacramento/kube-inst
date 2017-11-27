@@ -4,13 +4,6 @@
 - include: ntp.yml
 - include: etc-hosts.yml
 
-- name: Install Docker for RedHat
-  yum:
-    name: docker
-    state: latest
-  become: yes
-  when: ansible_os_family == "RedHat"
-
 - name: Install curl and apt-transport-https
   package:
     name: "{{ item }}"
@@ -67,6 +60,32 @@
   - kubectl
   when: full_clean is defined and full_clean
   become: yes
+
+- name: install docker dependencies
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - yum-utils 
+    - device-mapper-persistent-data 
+    - lvm2
+
+- name: Setup yum repo for docker
+  shell: "yum-config-manager --add-repo {{ centos_docker_repo }}"
+  when: ansible_os_family == "RedHat"
+  become: yes
+
+#- name: Enable docker repo
+#  shell: "yum-config-manager --enable docker-ce-edge"
+#  when: ansible_os_family == "RedHat"
+#  become: yes
+
+- name: Install Docker for RedHat
+  yum:
+    name: docker-ce
+    state: latest
+  become: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Add Kubernetes repo for RedHat
   shell:
