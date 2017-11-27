@@ -33,6 +33,7 @@
 
 - name: Install Docker for Debian
   shell: apt-get update && apt-get install -y --allow-downgrades docker-ce=$(apt-cache madison docker-ce | grep 17.03 | head -1 | awk '{print $3}')
+  environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "Debian"
 
