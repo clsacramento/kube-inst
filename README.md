@@ -6,7 +6,7 @@ This is an ansible script to deploy kubernetes on bare-metal servers. Kubernetes
 * Nodes networking should be configured.
 * The nodes can be accessed with the same SSH key.
 
-The following should be run on the master node or a jumpbox:
+The following should be run on a jumpbox:
 ~~~
 git clone https://github.com/clsacramento/kube-inst
 cd kube-inst
