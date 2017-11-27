@@ -18,6 +18,7 @@
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
+  environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "Debian"
 
