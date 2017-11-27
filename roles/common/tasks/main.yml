@@ -18,6 +18,7 @@
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
+  environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "Debian"
 
@@ -32,6 +33,7 @@
 
 - name: Install Docker for Debian
   shell: apt-get update && apt-get install -y --allow-downgrades docker-ce=$(apt-cache madison docker-ce | grep 17.03 | head -1 | awk '{print $3}')
+  environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "Debian"
 
@@ -69,6 +71,8 @@
     - yum-utils 
     - device-mapper-persistent-data 
     - lvm2
+  become: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Setup yum repo for docker
   shell: "yum-config-manager --add-repo {{ centos_docker_repo }}"
