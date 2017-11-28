@@ -31,7 +31,7 @@
       name: kubelet
       state: restarted
     become: yes
-    when: kubelet_installed == "true"
+    when: kubelet_installed.stdout == "true"
 
   - name: Reboot
     shell: sleep 2 && shutdown -r now
