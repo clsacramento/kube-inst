@@ -37,15 +37,15 @@
   become: yes
   when: ansible_os_family == "Debian"
 
-#- name: Change docker cgroup driver to systemd
-#  shell:
-#    cmd: |
-#      cat << EOF > /etc/docker/daemon.json
-#      {
-#        "exec-opts": ["native.cgroupdriver=systemd"]
-#      }
-#      EOF
-#  become: yes
+- name: Change docker cgroup driver to systemd
+  shell:
+    cmd: |
+      cat << EOF > /etc/docker/daemon.json
+      {
+        "exec-opts": ["native.cgroupdriver=systemd"]
+      }
+      EOF
+  become: yes
 
 #- name: Clean docker images
 #  shell: docker rmi $(docker images -q)
@@ -81,16 +81,15 @@
   when: ansible_os_family == "RedHat"
   become: yes
 
-#- name: Enable docker repo
-#  shell: "yum-config-manager --enable docker-ce-edge"
-#  when: ansible_os_family == "RedHat"
-#  become: yes
+- name: Enable docker repo
+  shell: "yum-config-manager --enable docker-ce-edge"
+  when: ansible_os_family == "RedHat"
+  become: yes
 
 - name: Install Docker for RedHat
-#  yum:
-#    name: docker-ce
-#    state: latest
-  shell: "yum install -y --setopt=obsoletes=0 docker-ce-17.03.2.ce-1.el7.centos docker-ce-selinux-17.03.2.ce-1.el7.centos"
+  yum:
+    name: docker-ce
+    state: latest
   environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "RedHat"
