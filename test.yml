@@ -8,7 +8,7 @@
   gather_facts: False
   pre_tasks:
     - name: "install python 2"
-      raw: test -e /usr/bin/python || (http_proxy={{ proxy }} apt -y update && http_proxy={{ proxy }} apt install -y python-simplejson)
+      raw: test -e /usr/bin/python || (http_proxy={{ proxy }} apt -y update && http_proxy={{ proxy }} apt install -y python-simplejson aptitude)
       register: output
       changed_when: output.stdout != ""
     - setup:
