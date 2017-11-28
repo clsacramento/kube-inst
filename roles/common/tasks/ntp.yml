@@ -10,6 +10,7 @@
   package:
     name: ntp
     state: latest
+  environment: '{{ proxy_env | default ({}) }}'
   become: yes
 
 
@@ -17,6 +18,7 @@
   package:
     name: ntpdate
     state: latest
+  environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "Debian"
 
