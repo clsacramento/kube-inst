@@ -5,6 +5,7 @@ This is an ansible script to deploy kubernetes on bare-metal servers. Kubernetes
 * This was tested on nodes running CentOS 7.x and Ubuntu 16.04.
 * Nodes networking should be configured.
 * The nodes can be accessed with the same SSH key.
+* Ansible 2.3.
 
 The following should be run on a jumpbox:
 ~~~
