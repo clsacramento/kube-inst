@@ -9,7 +9,7 @@
 
  - name: deploy Grafana, Heapster and InfluxDB
    when: deploy_monitoring == true
-   shell: "kubectl create -f /tmp/monitoring/"
+   shell: "kubectl apply -f /tmp/monitoring/"
    register: result
    changed_when: '"created" in result.stdout'
 
@@ -49,7 +49,7 @@
 
  - name: deploy Helm service
    when: deploy_helm == true
-   shell: "kubectl create -f /tmp/helm.yaml"
+   shell: "kubectl apply -f /tmp/helm.yaml"
    register: result
    changed_when: '"created" in result.stdout'
 
@@ -111,7 +111,7 @@
    when: deploy_demo_app == true
    shell: "{{ item }}"
    with_items:
-   - "kubectl create namespace sock-shop"
+   - 'echo "{\"apiVersion\": \"v1\",\"kind\": \"Namespace\",\"metadata\": {\"name\": \"sock-shop\"}}" | kubectl apply -f -'
    - 'kubectl apply -n sock-shop -f "https://github.com/microservices-demo/microservices-demo/blob/master/deploy/kubernetes/complete-demo.yaml?raw=true"'
    environment: '{{ proxy_env | default ({}) }}'
    register: sock_shop
@@ -165,7 +165,7 @@
 
  - name: Deploy etcd-operator
    when: deploy_federation == true
-   shell: "kubectl create -f /tmp/etcd-operator/example/deployment.yaml"
+   shell: "kubectl apply -f /tmp/etcd-operator/example/deployment.yaml"
 
  - name: Wait for etcd operator to create a Kubernetes Custom Resource Definition (CRD)
    when: deploy_federation == true
@@ -178,7 +178,7 @@
 
  - name: Deploy etcd-operator
    when: deploy_federation == true
-   shell: "kubectl create -f /tmp/etcd-operator/example/example-etcd-cluster.yaml"
+   shell: "kubectl apply -f /tmp/etcd-operator/example/example-etcd-cluster.yaml"
 
  - name: Copy CoreDNS configuration
    when: deploy_federation == true
@@ -273,19 +273,19 @@
    
 # 3par-etcd
  - name: copy 3par-etcd
-   when: "{{ 3par_plugin | default(False) }}"
+   when: 3par_plugin
    copy:
      src: ./files/3par_etcd.yaml
      dest: /tmp/3par_etcd.yaml
 
  - name: deploy 3par-etcd
-   when: "{{ 3par_plugin | default(False) }}"
+   when: 3par_plugin
    shell: "kubectl apply -f /tmp/3par_etcd.yaml"
    register: 3par-etcd
    changed_when: '"created" in 3par-etcd.stdout'
 
  - name: wait for 3par-etcd deployment
-   when: "{{ 3par_plugin | default(False) }}"
+   when: 3par_plugin
    shell: "kubectl get pods -n kube-system | grep 3par-etcd"
    register: result
    until: result.stdout.find("Running") != -1
