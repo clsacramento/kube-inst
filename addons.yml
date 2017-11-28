@@ -3,7 +3,7 @@
   roles: 
   - role: addons
 
-- hosts: all
+- hosts: kube
   tasks:
    - include: roles/addons/tasks/3parplugin.yml
-     when: "{{ 3par_plugin | default(False) }}"
+     when: hpe3par_plugin == true
