@@ -37,16 +37,6 @@
   become: yes
   when: ansible_os_family == "Debian"
 
-- name: Change docker cgroup driver to systemd
-  shell:
-    cmd: |
-      cat << EOF > /etc/docker/daemon.json
-      {
-        "exec-opts": ["native.cgroupdriver=systemd"]
-      }
-      EOF
-  become: yes
-
 #- name: Clean docker images
 #  shell: docker rmi $(docker images -q)
 #  become: yes
@@ -93,6 +83,16 @@
   environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "RedHat"
+
+- name: Change docker cgroup driver to systemd
+  shell:
+    cmd: |
+      cat << EOF > /etc/docker/daemon.json
+      {
+        "exec-opts": ["native.cgroupdriver=systemd"]
+      }
+      EOF
+  become: yes
 
 - name: Add Kubernetes repo for RedHat
   shell:
