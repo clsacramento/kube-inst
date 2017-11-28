@@ -37,16 +37,6 @@
   become: yes
   when: ansible_os_family == "Debian"
 
-- name: Change docker cgroup driver to systemd
-  shell:
-    cmd: |
-      cat << EOF > /etc/docker/daemon.json
-      {
-        "exec-opts": ["native.cgroupdriver=systemd"]
-      }
-      EOF
-  become: yes
-
 #- name: Clean docker images
 #  shell: docker rmi $(docker images -q)
 #  become: yes
@@ -93,6 +83,40 @@
   environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "RedHat"
+
+- name: create systemd docker.service
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+  become: yes
+
+- name: Add proxy to docker
+  template:
+    src: ./templates/http-proxy.conf.j2
+    dest: /etc/systemd/system/docker.service.d/http-proxy.conf
+  become: yes
+  when: proxy is defined
+
+- name: Reload systemd
+  command: systemctl daemon-reload
+  become: yes
+
+- name: Restart docker
+  systemd:
+    name: docker
+    state: restarted
+    enabled: yes
+  become: yes
+
+- name: Change docker cgroup driver to systemd
+  shell:
+    cmd: |
+      cat << EOF > /etc/docker/daemon.json
+      {
+        "exec-opts": ["native.cgroupdriver=systemd"]
+      }
+      EOF
+  become: yes
 
 - name: Add Kubernetes repo for RedHat
   shell:
@@ -166,23 +190,6 @@
   - kubeadm
   - kubectl
   environment: '{{ proxy_env | default ({}) }}'
-  become: yes
-
-- name: create systemd docker.service
-  file:
-    path: /etc/systemd/system/docker.service.d
-    state: directory
-  become: yes
-
-- name: Add proxy to docker
-  template:
-    src: ./templates/http-proxy.conf.j2
-    dest: /etc/systemd/system/docker.service.d/http-proxy.conf
-  become: yes
-  when: proxy is defined
-
-- name: Reload systemd
-  command: systemctl daemon-reload
   become: yes
 
 - name: Restart docker
