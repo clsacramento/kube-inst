@@ -1,14 +1,28 @@
 ---
+
+# Install missing python for Ansible
+
+- hosts: all
+  sudo: yes
+  remote_user: root
+  gather_facts: False
+  pre_tasks:
+    - name: "install python 2"
+      raw: test -e /usr/bin/python || (http_proxy={{ proxy }} apt -y update && http_proxy={{ proxy }} apt install -y python-simplejson)
+      register: output
+      changed_when: output.stdout != ""
+    - setup:
+
 ### Test connectivity to all hosts
 
-  - hosts: kube
-    any_errors_fatal: true
-    max_fail_percentage: 0
-    tasks:
-      - name: uptime
-        shell: uptime ; date ; sleep 3
-        register: upt
-        changed_when: false
+- hosts: kube
+  any_errors_fatal: true
+  max_fail_percentage: 0
+  tasks:
+    - name: uptime
+      shell: uptime ; date ; sleep 3
+      register: upt
+      changed_when: false
 
-      - debug:
-          var : upt
+    - debug:
+        var : upt
