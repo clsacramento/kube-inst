@@ -71,11 +71,13 @@
     - yum-utils 
     - device-mapper-persistent-data 
     - lvm2
+  environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "RedHat"
 
 - name: Setup yum repo for docker
   shell: "yum-config-manager --add-repo {{ centos_docker_repo }}"
+  environment: '{{ proxy_env | default ({}) }}'
   when: ansible_os_family == "RedHat"
   become: yes
 
@@ -85,9 +87,11 @@
 #  become: yes
 
 - name: Install Docker for RedHat
-  yum:
-    name: docker-ce
-    state: latest
+#  yum:
+#    name: docker-ce
+#    state: latest
+  shell: "yum install -y --setopt=obsoletes=0 docker-ce-17.03.2.ce-1.el7.centos docker-ce-selinux-17.03.2.ce-1.el7.centos"
+  environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "RedHat"
 
@@ -141,6 +145,7 @@
   apt_key:
     url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
     state: present
+  environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "Debian"
 
@@ -149,6 +154,7 @@
     repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
     state: present
     update_cache: yes
+  environment: '{{ proxy_env | default ({}) }}'
   when: ansible_os_family == "Debian"
   become: yes
 
@@ -160,6 +166,7 @@
   - kubelet
   - kubeadm
   - kubectl
+  environment: '{{ proxy_env | default ({}) }}'
   become: yes
 
 - name: create systemd docker.service

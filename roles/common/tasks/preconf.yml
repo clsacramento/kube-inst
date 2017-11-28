@@ -21,9 +21,11 @@
   become: yes
 
 - name: yum upgrade
-  yum:
-    name: "*"
-    state: latest
+  shell: "yum upgrade -y"
+#  yum:
+#    name: "*"
+#    state: latest
+  environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "RedHat"
 
