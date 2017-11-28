@@ -22,7 +22,7 @@
       path: "{{ ansible_env.HOME }}/.kube"
  
   - name: Verify if kubelet service exists
-    shell: "if systemctl status firewalld | grep -q loaded; then echo true; else echo false ; fi;"
+    shell: "if systemctl status kubelet | grep -q loaded; then echo true; else echo false ; fi;"
     register: kubelet_installed
     changed_when: false
 
