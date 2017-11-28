@@ -46,6 +46,7 @@
    copy:
      src: ./files/helm.yaml
      dest: /tmp/helm.yaml
+   changed_when: false
 
  - name: deploy Helm service
    when: deploy_helm == true
@@ -104,6 +105,7 @@
    until: result.stdout.find("Running") != -1
    retries: 30
    delay: 10
+   changed_when: false
 
 # Demo App
 
