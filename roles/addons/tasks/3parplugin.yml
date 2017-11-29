@@ -10,7 +10,7 @@
 
 - name: Copy 3par plugin configuration
   template:
-    src: 3parplugin.conf
+    src: ././templates/3parplugin.conf
     dest: /etc/hpedockerplugin/hpe.conf
   become: yes
 
