@@ -53,3 +53,6 @@ deploy_ingress: false
 
 #Configure 3par plugin for docker
 hpe3par_plugin: false
+
+# Internal docker registry IP/DNS (without HTTP). Defaults to port 5000
+docker_registry: 172.16.108.64
