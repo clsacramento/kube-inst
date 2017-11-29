@@ -283,12 +283,12 @@
  - name: deploy 3par-etcd
    when: hpe3par_plugin == true
    shell: "kubectl apply -f /tmp/3par_etcd.yaml"
-   register: 3par-etcd
-   changed_when: '"created" in 3par-etcd.stdout'
+   register: etcd3par
+   changed_when: '"created" in etcd3par.stdout'
 
  - name: wait for 3par-etcd deployment
    when: hpe3par_plugin == true
-   shell: "kubectl get pods -n kube-system | grep 3par-etcd"
+   shell: "kubectl get pods -n kube-system | grep etcd3par"
    register: result
    until: result.stdout.find("Running") != -1
    retries: 30

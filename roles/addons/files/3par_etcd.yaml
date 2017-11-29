@@ -5,21 +5,21 @@ kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
   labels:
-    k8s-app: 3par-etcd
-  name: 3par-etcd
+    k8s-app: etcd3par
+  name: etcd3par
   namespace: kube-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      k8s-app: 3par-etcd
+      k8s-app: etcd3par
   template:
     metadata:
       labels:
-        k8s-app: 3par-etcd
+        k8s-app: etcd3par
     spec:
       containers:
-      - name: 3par-etcd
+      - name: etcd3par
         image: quay.io/coreos/etcd:v2.2.0
         ports:
         - containerPort: 2379
@@ -55,13 +55,13 @@ kind: Service
 apiVersion: v1
 metadata:
   labels:
-    k8s-app: 3par-etcd
-  name: 3par-etcd
+    k8s-app: etcd3par
+  name: etcd3par
   namespace: kube-system
 spec:
   ports:
   - port: 2379
     targetPort: 2379 
   selector:
-    k8s-app: 3par-etcd
+    k8s-app: etcd3par
   type: NodePort
