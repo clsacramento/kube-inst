@@ -1,0 +1,27 @@
+---
+
+- name: 3par plugin - Install plugin OS dependencies
+  package:
+    name: "{{ item }}"
+    state: installed
+  with_items: 
+    - open-iscsi
+    - multipath-tools
+  environment: '{{ proxy_env | default ({}) }}'
+  become: yes
+
+
+- name: 3par plugin - Reload systemd
+  command: systemctl daemon-reload
+  become: yes
+
+- name: 3par plugin - services
+  systemd:
+    name: 
+      - open-iscsi
+      - multipath-tools
+      - docker
+    state: restarted
+    enabled: yes
+  become: yes
+

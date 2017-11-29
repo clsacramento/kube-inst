@@ -1,0 +1,37 @@
+---
+
+
+- name: 3par plugin - Install plugin OS dependencies
+  package:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    - iscsi-initiator-utils
+    - device-mapper-multipath
+  environment: '{{ proxy_env | default ({}) }}'
+  become: yes
+
+
+- name: 3par plugin - Reload systemd
+  command: systemctl daemon-reload
+  become: yes
+
+- name: 3par plugin - Enable services
+  systemd:
+    name: 
+      - iscsid
+      - multipathd
+    state: restarted
+    enabled: yes
+  become: yes
+
+
+- name: 3par plugin - services
+  systemd:
+    name: 
+      - iscsid
+      - multipathd
+    state: restarted
+    enabled: yes
+  become: yes
+
