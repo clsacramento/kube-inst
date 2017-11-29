@@ -2,3 +2,4 @@
 hosts
 ansible.cfg
 group_vars/all
+group_vars/3par
