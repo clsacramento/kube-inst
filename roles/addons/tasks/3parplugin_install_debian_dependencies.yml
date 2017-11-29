@@ -1,13 +1,12 @@
 ---
 
-
 - name: 3par plugin - Install plugin OS dependencies
   package:
     name: "{{ item }}"
     state: installed
-  with_items:
-    - iscsi-initiator-utils
-    - device-mapper-multipath
+  with_items: 
+    - open-iscsi
+    - multipath-tools
   environment: '{{ proxy_env | default ({}) }}'
   become: yes
 
@@ -16,22 +15,14 @@
   command: systemctl daemon-reload
   become: yes
 
-- name: 3par plugin - Enable services
-  systemd:
-    name: 
-      - iscsid
-      - multipathd
-    state: restarted
-    enabled: yes
-  become: yes
-
-
 - name: 3par plugin - services
   systemd:
-    name: 
-      - iscsid
-      - multipathd
+    name: "{{ item }}" 
     state: restarted
     enabled: yes
+  with_items:
+   - open-iscsi
+   - multipath-tools
+   - docker
   become: yes
 
