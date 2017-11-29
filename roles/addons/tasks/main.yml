@@ -75,6 +75,7 @@
    when: deploy_helm == true
    shell: "helm init --service-account helm"
    environment: '{{ proxy_env | default ({}) }}'
+   changed_when: false
 
  - name: wait for Helm service deployment
    when: deploy_helm == true

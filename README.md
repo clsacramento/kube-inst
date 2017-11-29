@@ -14,10 +14,18 @@ cd kube-inst
 ~~~
 
 ## Files to update with environment configuration
+Copy the example files for update
+~~~
+cp hosts.example hosts
+cp ansible.cfg.example ansible.cfg
+cp groupvars/all.example groupvars/all
+cp groupvars/3par.example groupvars/3par
+~~~
 
- * Rename ./hosts.example to ./hosts: change ip and host names
- * Rename ./ansible.cfg.example to ./ansible.cfg: change path to ssh_key to connect to all hosts
- * Rename ./groupvars/all.example to ./groupvars/all: adapt all variables to the environment
+ * ./hosts: change ip and host names
+ * ./ansible.cfg: change path to ssh_key to connect to all hosts
+ * ./groupvars/all: adapt all variables to the environment
+ * ./groupvars/3par: add information about 3par connections
 
 
 ## How to deploy Kubernetes:

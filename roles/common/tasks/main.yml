@@ -117,6 +117,7 @@
       }
       EOF
   become: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Add Kubernetes repo for RedHat
   shell:
@@ -201,7 +202,7 @@
 
 - name: Restart kubelet
   systemd:
-    state: restarted
+    state: stopped
     name: kubelet
     enabled: yes
   become: yes
