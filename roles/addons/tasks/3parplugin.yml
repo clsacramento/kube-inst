@@ -6,11 +6,11 @@
 
 - name: Set 3par IP
   set_fact:
-    3par_ip: "{{ hostvars[inventory_hostname].ansible_ssh_host }}"
+    etcd_ip: "{{ hostvars[inventory_hostname].ansible_ssh_host }}"
 
 - name: Copy 3par plugin configuration
   template:
-    src: ./templates/3parplugin.conf
+    src: 3parplugin.conf
     dest: /etc/hpedockerplugin/hpe.conf
   become: yes
 
