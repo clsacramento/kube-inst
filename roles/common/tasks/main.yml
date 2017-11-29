@@ -108,14 +108,40 @@
     enabled: yes
   become: yes
 
+- name: create /etc/docker/daemon.json
+  copy:
+    src: ./files/daemon.json
+    dest: /etc/docker/daemon.json
+  become: yes
+
+- name: Adds docker registry mirror
+  lineinfile:
+    path: /etc/docker/daemon.json
+    regexp: '^(.*)registry-mirrors(.*)$'
+    line: '  "registry-mirrors": ["http://{{ docker_registry }}:5000"],'
+  become: yes
+  when: docker_registry is defined
+
+- name: Adds docker insecure registry
+  lineinfile:
+    path: /etc/docker/daemon.json
+    regexp: '^(.*)insecure-registry(.*)$'
+    line: '  "insecure-registry": ["{{ docker_registry }}:5000"],'
+  become: yes
+  when: docker_registry is defined
+
 - name: Change docker cgroup driver to systemd
-  shell:
-    cmd: |
-      cat << EOF > /etc/docker/daemon.json
-      {
-        "exec-opts": ["native.cgroupdriver=systemd"]
-      }
-      EOF
+  lineinfile:
+    path: /etc/docker/daemon.json
+    regexp: '^(.*)exec-opts(.*)$'
+    line: '  "exec-opts": ["native.cgroupdriver=systemd"]'
+#  shell:
+#    cmd: |
+#      cat << EOF > /etc/docker/daemon.json
+#      {
+#        "exec-opts": ["native.cgroupdriver=systemd"]
+#      }
+#      EOF
   become: yes
   when: ansible_os_family == "RedHat"
 
