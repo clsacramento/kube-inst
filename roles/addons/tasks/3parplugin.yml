@@ -1,19 +1,33 @@
-- name: Create 3par plugin directory
+- name: 3par plugin - Create 3par plugin directory
   file:
     path: /etc/hpedockerplugin
     state: directory
   become: yes
 
-- name: Set 3par IP
+- name: 3par plugin - Set 3par IP
   set_fact:
     etcd_ip: "{{ hostvars[inventory_hostname].ansible_ssh_host }}"
 
-- name: Copy 3par plugin configuration
+- name: 3par plugin - Copy 3par plugin configuration
   template:
     src: ././templates/3parplugin.conf
     dest: /etc/hpedockerplugin/hpe.conf
   become: yes
 
-- name: Install docker plugin
+- name: 3par plugin - Install docker plugin
   shell: docker plugin install store/hpestorage/hpedockervolumeplugin:2.0.1 --alias hpe
+  become: yes
+
+- include: 3parplugin_install_debian_dependencies.yml
+  when: ansible_os_family == "Debian" 
+
+- include: 3parplugin_install_redhat_dependencies.yml
+  when: ansible_os_family == "RedHat"
+
+- name: 3par plugin - set certs source dir
+  shell: docker plugin install hpe certs.source=/tmp
+  become: yes
+ 
+- name: 3par plugin - enable docker plugin
+  shell: docker plugin enable hpe
   become: yes
