@@ -28,15 +28,22 @@ spec:
           protocol: TCP
         - containerPort: 4001
           protocol: TCP
-        args:
-          - -name etcd0
-          - -advertise-client-urls http://${HostIP}:2379,http://${HostIP}:4001 \
-          - -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 \
-          - -initial-advertise-peer-urls http://${HostIP}:2380 \
-          - -listen-peer-urls http://0.0.0.0:2380 \
-          - -initial-cluster-token etcd-cluster-1 \
-          - -initial-cluster etcd0=http://${HostIP}:2380 \
-          - -initial-cluster-state new
+        command:
+          - /etcd
+          - --name
+          - etcd3par
+          - --initial-advertise-peer-urls
+          - http://etcd3par:2380
+          - --listen-peer-urls
+          - http://0.0.0.0:2380
+          - --listen-client-urls
+          - http://0.0.0.0:2379
+          - --advertise-client-urls
+          - http://etcd3par:2379
+          - --initial-cluster
+          - etcd3par=http://etcd3par:2380
+          - --initial-cluster-state
+          - new
         volumeMounts:
         - mountPath: /etc/ssl/certs
           name: crt-volume
