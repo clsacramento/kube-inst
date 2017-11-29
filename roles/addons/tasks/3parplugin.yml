@@ -21,11 +21,11 @@
   when: ansible_os_family == "RedHat"
 
 - name: 3par plugin - Install docker plugin
-  shell: docker plugin install store/hpestorage/hpedockervolumeplugin:2.0.1 --alias hpe
+  shell: docker plugin install store/hpestorage/hpedockervolumeplugin:2.0.1 --alias hpe --disable --grant-all-permissions
   become: yes
 
 - name: 3par plugin - set certs source dir
-  shell: docker plugin install hpe certs.source=/tmp
+  shell: docker plugin set hpe certs.source=/tmp
   become: yes
  
 - name: 3par plugin - enable docker plugin
