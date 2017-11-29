@@ -18,14 +18,13 @@ Copy the example files for update
 ~~~
 cp hosts.example hosts
 cp ansible.cfg.example ansible.cfg
-cp groupvars/all.example groupvars/all
-cp groupvars/3par.example groupvars/3par
+cp -r group_vars/example group_vars/all
 ~~~
 
  * ./hosts: change ip and host names
  * ./ansible.cfg: change path to ssh_key to connect to all hosts
- * ./groupvars/all: adapt all variables to the environment
- * ./groupvars/3par: add information about 3par connections
+ * ./groupvars/all/main.yml: adapt all variables to the environment
+ * ./groupvars/all/3par.yml: add information about 3par connections
 
 
 ## How to deploy Kubernetes:
