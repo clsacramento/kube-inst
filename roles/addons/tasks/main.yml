@@ -46,6 +46,7 @@
    copy:
      src: ./files/helm.yaml
      dest: /tmp/helm.yaml
+   changed_when: false
 
  - name: deploy Helm service
    when: deploy_helm == true
@@ -74,6 +75,7 @@
    when: deploy_helm == true
    shell: "helm init --service-account helm"
    environment: '{{ proxy_env | default ({}) }}'
+   changed_when: false
 
  - name: wait for Helm service deployment
    when: deploy_helm == true
@@ -104,6 +106,7 @@
    until: result.stdout.find("Running") != -1
    retries: 30
    delay: 10
+   changed_when: false
 
 # Demo App
 
@@ -273,19 +276,19 @@
    
 # 3par-etcd
  - name: copy 3par-etcd
-   when: 3par_plugin
+   when: hpe3par_plugin == true
    copy:
      src: ./files/3par_etcd.yaml
      dest: /tmp/3par_etcd.yaml
 
  - name: deploy 3par-etcd
-   when: 3par_plugin
+   when: hpe3par_plugin == true
    shell: "kubectl apply -f /tmp/3par_etcd.yaml"
    register: 3par-etcd
    changed_when: '"created" in 3par-etcd.stdout'
 
  - name: wait for 3par-etcd deployment
-   when: 3par_plugin
+   when: hpe3par_plugin == true
    shell: "kubectl get pods -n kube-system | grep 3par-etcd"
    register: result
    until: result.stdout.find("Running") != -1
