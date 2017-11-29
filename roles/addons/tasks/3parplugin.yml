@@ -14,15 +14,15 @@
     dest: /etc/hpedockerplugin/hpe.conf
   become: yes
 
+- include: roles/addons/tasks/3parplugin_install_debian_dependencies.yml
+  when: ansible_os_family == "Debian" 
+
+- include: roles/addons/tasks/3parplugin_install_redhat_dependencies.yml
+  when: ansible_os_family == "RedHat"
+
 - name: 3par plugin - Install docker plugin
   shell: docker plugin install store/hpestorage/hpedockervolumeplugin:2.0.1 --alias hpe
   become: yes
-
-- include: 3parplugin_install_debian_dependencies.yml
-  when: ansible_os_family == "Debian" 
-
-- include: 3parplugin_install_redhat_dependencies.yml
-  when: ansible_os_family == "RedHat"
 
 - name: 3par plugin - set certs source dir
   shell: docker plugin install hpe certs.source=/tmp
