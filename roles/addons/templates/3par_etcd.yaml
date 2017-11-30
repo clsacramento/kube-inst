@@ -69,6 +69,7 @@ spec:
   ports:
   - port: 2379
     targetPort: 2379 
+    nodePort: {{ etcd_port }}
   selector:
     k8s-app: etcd3par
   type: NodePort

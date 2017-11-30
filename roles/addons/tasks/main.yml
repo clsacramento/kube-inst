@@ -277,8 +277,8 @@
 # 3par-etcd
  - name: copy 3par-etcd
    when: hpe3par_plugin == true
-   copy:
-     src: ./files/3par_etcd.yaml
+   template:
+     src: ./templates/3par_etcd.yaml
      dest: /tmp/3par_etcd.yaml
 
  - name: deploy 3par-etcd
