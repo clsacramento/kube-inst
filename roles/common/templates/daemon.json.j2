@@ -1,0 +1,10 @@
+{
+{% if docker_registry is defined %}
+  "registry-mirrors": ["http://{{ docker_registry }}:{{ docker_registry_port | default(5000) }}"],
+  "insecure-registry": ["{{ docker_registry }}"],
+{% else %}
+  "registry-mirrors": [""],
+  "insecure-registry": [""],
+{% endif %}
+  "exec-opts": [""]
+}
