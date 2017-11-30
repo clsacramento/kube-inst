@@ -1,6 +1,6 @@
 ---
 
-- name: 3par plugin - Install plugin OS dependencies
+- name: 3par plugin - Install plugin OS dependencies on Debian
   package:
     name: "{{ item }}"
     state: installed
@@ -8,21 +8,29 @@
     - open-iscsi
     - multipath-tools
   environment: '{{ proxy_env | default ({}) }}'
+  register: packages
   become: yes
 
+- name: 3par plugin - check if open-iscsi was already installed on Debian
+  set_fact:
+    reload: "{{ 'is already the newest version' in packages.results.0.results.0 }}"
 
-- name: 3par plugin - Reload systemd
+- name: 3par plugin - check if was multipath-tools was already installed on Debian
+  set_fact:
+    reload: "{{ reload or 'is already the newest version' in packages.results.1.results.0 }}"
+
+- name: 3par plugin - Reload systemd on Debian
   command: systemctl daemon-reload
   become: yes
+  when: reload
 
-- name: 3par plugin - services
+- name: 3par plugin - start services Debian
   systemd:
     name: "{{ item }}" 
-    state: restarted
+    state: started
     enabled: yes
   with_items:
    - open-iscsi
    - multipath-tools
-   - docker
   become: yes
 

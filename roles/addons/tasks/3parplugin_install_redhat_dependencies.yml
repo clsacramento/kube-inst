@@ -1,7 +1,7 @@
 ---
 
 
-- name: 3par plugin - Install plugin OS dependencies
+- name: 3par plugin - Install plugin RedHat OS dependencies
   package:
     name: "{{ item }}"
     state: installed
@@ -9,31 +9,30 @@
     - iscsi-initiator-utils
     - device-mapper-multipath
   environment: '{{ proxy_env | default ({}) }}'
+  register: packages
   become: yes
 
+- name: 3par plugin - check if iscsi-initiator-utils were already installed
+  set_fact:
+    reload: "{{ 'installed and latest version' in packages.results.0.results.0 }}"
 
-- name: 3par plugin - Reload systemd
+- name: 3par plugin - check if device-mapper-multipath were already installed
+  set_fact:
+    reload: "{{ reload or 'installed and latest version' in packages.results.1.results.0 }}"
+
+- name: 3par plugin - Reload systemd on RedHat
   command: systemctl daemon-reload
   become: yes
+  when: reload
+  with_items: packages.results
 
-- name: 3par plugin - Enable services
+- name: 3par plugin - restart services on Redhat 
   systemd:
     name: "{{ item }}"
-    state: restarted
+    state: started
     enabled: yes
   with_items:
     - iscsid
     - multipathd
   become: yes
-
-
-- name: 3par plugin - services
-  systemd:
-    name: "{{ item }}"
-    state: restarted
-    enabled: yes
-  with_items:
-    - iscsid
-    - multipathd
-  become: yes
-
+  when: reload
