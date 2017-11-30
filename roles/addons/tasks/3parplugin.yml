@@ -21,7 +21,8 @@
   when: ansible_os_family == "RedHat"
 
 - name: 3par plugin - check if installed and version
-  shell: "sudo docker plugin inspect hpe | grep PluginReference | cut -d':' -f 3 | tr -d ',' | tr -d '\"'"
+  shell: "{% raw %} docker plugin inspect -f '{{lower .PluginReference}}' hpe | cut -d ':' -f 2 {% endraw %}"
+  become: yes
   register: installed_version
   changed_when: false
 
@@ -44,3 +45,46 @@
   shell: docker plugin enable hpe
   become: yes
   when: hpe3par_plugin_version != installed_version.stdout
+
+
+- name: 3par plugin - create directory for dory
+  file:
+    path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/dory~hpe
+    state: directory
+  become: yes
+
+- name: 3par plugin - copy dory binary to nodes
+  copy:
+    src: "./files/dory-{{ ansible_os_family }}"
+    dest: "/usr/libexec/kubernetes/kubelet-plugins/volume/exec/dory~hpe/hpe"
+  become: yes
+
+- name: 3par plugin - make binary executable
+  file:
+    dest: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/dory~hpe/hpe
+    mode: a+x
+  become: yes
+
+- name: 3par plugin - obtain docker plugin id
+  shell: "{% raw %} docker plugin inspect -f '{{lower .Id}}' hpe {% endraw %}"
+  register: plugin_id_cmd
+  become: yes
+  changed_when: false
+
+
+- name: 3par plugin - set fact for plugin id
+  set_fact:
+    plugin_id: "{{ plugin_id_cmd.stdout }}"
+
+- name: 3par plugin - add dory config file
+  template:
+    src: ././templates/dory.json
+    dest: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/dory~hpe/hpe.json
+  become: yes
+
+- name: 3par plugin - restart kubelet
+  systemd:
+    name: kubelet
+    state: restarted
+    enabled: true
+  become: yes 

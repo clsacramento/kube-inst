@@ -1,0 +1,16 @@
+{
+    # Where to log API calls
+    "logFilePath": "/var/log/dory.log”,
+
+    # Be very verbose about the API calls?
+    "logDebug": true,
+
+    # Does the underlying driver understand kubnernetes.io/<string> calls?
+    "stripK8sFromOptions": true,
+
+    # This is where our plugin API socket resides
+    "dockerVolumePluginSocketPath": "/run/docker/plugins/{{ plugin_id }}/hpe.sock”,
+ 
+    # Does the Docker Volume plugin support creation of volumes?
+    "createVolumes": true
+}
