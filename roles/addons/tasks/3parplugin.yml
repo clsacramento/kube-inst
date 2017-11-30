@@ -20,14 +20,27 @@
 - include: roles/addons/tasks/3parplugin_install_redhat_dependencies.yml
   when: ansible_os_family == "RedHat"
 
-- name: 3par plugin - Install docker plugin
-  shell: docker plugin install store/hpestorage/hpedockervolumeplugin:2.0.1 --alias hpe --disable --grant-all-permissions
-  become: yes
+- name: 3par plugin - check if installed and version
+  shell: "sudo docker plugin inspect hpe | grep PluginReference | cut -d':' -f 3 | tr -d ',' | tr -d '\"'"
+  register: installed_version
+  changed_when: false
 
-- name: 3par plugin - set certs source dir
+- name: 3par plugin - Install docker plugin
+  shell: "docker plugin install store/hpestorage/hpedockervolumeplugin:{{ hpe3par_plugin_version }} --alias hpe --disable --grant-all-permissions"
+  become: yes
+  when: hpe3par_plugin_version != installed_version.stdout
+
+- name: 3par plugin - set certs.source dir
   shell: docker plugin set hpe certs.source=/tmp
   become: yes
+  when: hpe3par_plugin_version != installed_version.stdout
+ 
+- name: 3par plugin - set glibc_libs.source dir
+  shell: docker plugin set hpe glibc_libs.source=/lib64 
+  become: yes
+  when: ansible_os_family == "RedHat" and hpe3par_plugin_version != installed_version.stdout
  
 - name: 3par plugin - enable docker plugin
   shell: docker plugin enable hpe
   become: yes
+  when: hpe3par_plugin_version != installed_version.stdout
