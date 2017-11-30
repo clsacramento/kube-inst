@@ -22,6 +22,9 @@
   become: yes
   when: ansible_os_family == "Debian"
 
+- include: roles/addons/tasks/3parplugin_install_debian_dependencies.yml
+  when: ansible_os_family == "Debian" 
+
 - name: Add docker repo
   shell:
     cmd: |
@@ -63,6 +66,9 @@
     - lvm2
   environment: '{{ proxy_env | default ({}) }}'
   become: yes
+  when: ansible_os_family == "RedHat"
+
+- include: roles/addons/tasks/3parplugin_install_redhat_dependencies.yml
   when: ansible_os_family == "RedHat"
 
 - name: Setup yum repo for docker
