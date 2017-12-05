@@ -26,7 +26,7 @@
    shell: "kubectl get pods --all-namespaces | wc -l"
    register: result
    until: result.stdout == "7"
-   retries: 60
+   retries: "{{ timeout | default(60) }}"
    delay: 10
    changed_when: false
 
@@ -34,6 +34,6 @@
    shell: "kubectl get pods -n kube-system | tail -n +2 | grep -v -w 'Running' | grep -v 'kube-dns' || true"
    register: result
    until: result.stdout == ""
-   retries: 60
+   retries: "{{ timeout | default(60) }}"
    delay: 10
    changed_when: false
