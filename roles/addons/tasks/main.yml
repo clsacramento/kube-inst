@@ -18,7 +18,7 @@
    shell: "kubectl get pods -n kube-system | grep heapster"
    register: result
    until: result.stdout.find("Running") != -1
-   retries: 60
+   retries: "{{ timeout | default(60) }}"
    delay: 10
    changed_when: false
 
@@ -27,7 +27,7 @@
    shell: "kubectl get pods -n kube-system | grep grafana"
    register: result
    until: result.stdout.find("Running") != -1
-   retries: 60
+   retries: "{{ timeout | default(60) }}"
    delay: 10
    changed_when: false
 
@@ -36,7 +36,7 @@
    shell: "kubectl get pods -n kube-system | grep influxdb"
    register: result
    until: result.stdout.find("Running") != -1
-   retries: 60
+   retries: "{{ timeout | default(60) }}"
    delay: 10
    changed_when: false
 
@@ -82,7 +82,7 @@
    shell: "kubectl get pods -n kube-system | grep tiller-deploy"
    register: result
    until: result.stdout.find("Running") != -1
-   retries: 60
+   retries: "{{ timeout | default(60) }}"
    delay: 10
    changed_when: false
 
@@ -104,7 +104,7 @@
    shell: "kubectl get pods -n kube-system | grep kubernetes-dashboard"
    register: result
    until: result.stdout.find("Running") != -1
-   retries: 30
+   retries: "{{ timeout | default(60) }}"
    delay: 10
    changed_when: false
 
@@ -125,7 +125,7 @@
    shell: "kubectl get pods -n sock-shop --no-headers=true | grep -ivw running || true"
    register: result
    until: result.stdout == ""
-   retries: 60
+   retries: "{{ timeout | default(60) }}"
    delay: 10
    changed_when: false
 
@@ -175,7 +175,7 @@
    shell: "kubectl get customresourcedefinitions"
    register: etcd_operator_crd
    until: etcd_operator_crd.stdout != ""
-   retries: 60
+   retries: "{{ timeout | default(60) }}"
    delay: 10
    changed_when: false
 
@@ -198,7 +198,7 @@
    shell: "kubectl get pods --no-headers=true | grep coredns | grep -ivw running || true"
    register: result
    until: result.stdout == ""
-   retries: 60
+   retries: "{{ timeout | default(60) }}"
    delay: 10
    changed_when: false
 
@@ -222,7 +222,7 @@
    shell: "kubectl get pods -n federation-system --no-headers=true | grep -ivw running || true"
    register: result
    until: result.stdout == ""
-   retries: 60
+   retries: "{{ timeout | default(60) }}"
    delay: 10
    changed_when: false
 
@@ -245,7 +245,7 @@
    shell: "kubectl get clusters --context=federation --no-headers=true | grep -ivw ready || true"
    register: result
    until: result.stdout == ""
-   retries: 60
+   retries: "{{ timeout | default(60) }}"
    delay: 10
    changed_when: false
 
@@ -265,7 +265,7 @@
    shell: "kubectl get pods --context=kubernetes --no-headers=true | grep -i traefik | grep -ivw running || true"
    register: result
    until: result.stdout == ""
-   retries: 60
+   retries: "{{ timeout | default(60) }}"
    delay: 10
    changed_when: false
 
@@ -292,7 +292,7 @@
    shell: "kubectl get pods -n kube-system | grep 3par-etcd"
    register: result
    until: result.stdout.find("Running") != -1
-   retries: 30
+   retries: "{{ timeout | default(60) }}"
    delay: 10
 
 #
