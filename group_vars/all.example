@@ -56,3 +56,4 @@ hpe3par_plugin: false
 
 # Internal docker registry IP/DNS (without HTTP). Defaults to port 5000. Comment if not used
 docker_registry: 172.16.108.64
+docker_registry_port: 5000
