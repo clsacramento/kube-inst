@@ -57,7 +57,7 @@
  - name: Download and unpack Helm client
    when: deploy_helm == true
    unarchive:
-     src: https://storage.googleapis.com/kubernetes-helm/helm-v2.7.2-linux-amd64.tar.gz
+     src: '{{ helm_binary }}'
      dest: /tmp
      remote_src: yes
    environment: '{{ proxy_env | default ({}) }}'
@@ -115,7 +115,7 @@
    shell: "{{ item }}"
    with_items:
    - 'echo "{\"apiVersion\": \"v1\",\"kind\": \"Namespace\",\"metadata\": {\"name\": \"sock-shop\"}}" | kubectl apply -f -'
-   - 'kubectl apply -n sock-shop -f "https://github.com/microservices-demo/microservices-demo/blob/master/deploy/kubernetes/complete-demo.yaml?raw=true"'
+   - 'kubectl apply -n sock-shop -f {{ demo_app }}'
    environment: '{{ proxy_env | default ({}) }}'
    register: sock_shop
    changed_when: '"created" in sock_shop.stdout'
@@ -133,7 +133,7 @@
  - name: Download and unpack kubefed
    when: deploy_federation == true
    unarchive:
-     src: "https://storage.googleapis.com/kubernetes-release/release/{{ kubernetes_version }}/kubernetes-client-linux-amd64.tar.gz"
+     src: '{{ kubefed_binary }}'
      dest: /tmp
      remote_src: yes
    environment: '{{ proxy_env | default ({}) }}'
@@ -158,7 +158,7 @@
  - name: Clone etcd-repo
    when: deploy_federation == true
    git:
-     repo: 'https://github.com/coreos/etcd-operator.git'
+     repo: '{{ etcd_operator_repo }}'
      dest: /tmp/etcd-operator
    environment: '{{ proxy_env | default ({}) }}'
 
@@ -252,12 +252,12 @@
 # Traefik ingress
  - name: Create RBAC rules for the traefik ingress controller
    when: deploy_ingress == true
-   shell: "kubectl apply -f https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/traefik-rbac.yaml"
+   shell: "kubectl apply -f {{ traefik_ingress_controller }}" 
    environment: '{{ proxy_env | default ({}) }}'
 
  - name: Deploy Traefik ingress using DeamonSet
    when: deploy_ingress == true
-   shell: "kubectl apply -f https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/traefik-ds.yaml"
+   shell: "kubectl apply -f {{ traefik_ingress }}" 
    environment: '{{ proxy_env | default ({}) }}'
 
  - name: Wait for Traefik pods to become ready
@@ -271,7 +271,7 @@
 
  - name: Deploy Traefik ingress UI
    when: deploy_ingress == true
-   shell: "kubectl apply -f https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/ui.yaml"
+   shell: "kubectl apply -f {{ traefik_ui }}" 
    environment: '{{ proxy_env | default ({}) }}'
    
 # 3par-etcd

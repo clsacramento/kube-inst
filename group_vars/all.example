@@ -59,4 +59,23 @@ docker_registry: 172.16.108.64
 docker_registry_port: 5000
 
 # Uncomment to override the default timeout of deployments. Timeout is equal to number of retries. Each retry is 10 seconds
-#timeout: 60
+timeout: 120
+
+# URLs
+helm_binary: "https://storage.googleapis.com/kubernetes-helm/helm-v2.7.2-linux-amd64.tar.gz"
+demo_app: "https://github.com/microservices-demo/microservices-demo/blob/master/deploy/kubernetes/complete-demo.yaml?raw=true"
+kubefed_binary: "https://storage.googleapis.com/kubernetes-release/release/'{{ kubernetes_version }}'/kubernetes-client-linux-amd64.tar.gz"
+etcd_operator_repo: "https://github.com/coreos/etcd-operator.git"
+traefik_ingress_controller: "https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/traefik-rbac.yaml"
+traefik_ingress: "https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/traefik-ds.yaml"
+traefik_ui: "https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/ui.yaml"
+calico: "http://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
+flannel: "https://raw.githubusercontent.com/coreos/flannel/v0.9.0/Documentation/kube-flannel.yml"
+weave: "https://cloud.weave.works/k8s/net?k8s-version='{{ kubernetes_version }}'"
+docker_repo_debian: "https://download.docker.com/linux/ubuntu xenial stable"
+docker_gpg: "https://download.docker.com/linux/ubuntu/gpg"
+docker_repo_centos: "https://download.docker.com/linux/centos/docker-ce.repo"
+kubernetes_yum_repo: "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64"
+kubernetes_yum_repo_gpg: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
+kubernetes_apt_repo: "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+kubernetes_apt_repo_gpg: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
