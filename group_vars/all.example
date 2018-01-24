@@ -3,7 +3,7 @@ ntp_servers: 172.16.1.5
 
 #default proxy
 proxy: 'http://proxy.sdc.hp.com:8080/'
-no_proxy: 'localhost,127.0.0.1,10.1.0.6,10.1.0.14,10.1.0.15,10.1.0.18'
+no_proxy: "localhost,127.0.0.1,10.1.0.7,10.1.0.13,10.1.0.5,10.1.0.11,'{{ docker_registry }}'"
 proxy_env:
   http_proxy: '{{ proxy }}'
   HTTP_PROXY: '{{ proxy }}'
@@ -11,9 +11,8 @@ proxy_env:
   HTTPS_PROXY: '{{ proxy }}'
   no_proxy: '{{ no_proxy }}'
   NO_PROXY: '{{ no_proxy }}'
-#proxy: http://proxy.sdc.hp.com:8080/
 #proxy that will be configured for yum
-yum_proxy: http://172.16.1.5:3142/
+yum_proxy: http://proxy.sdc.hp.com:8080/
 
 # Choose CNI network
 # Possible values are calico, flannel, weave
@@ -25,7 +24,7 @@ network_cidr: 10.244.0.0/16
 
 
 # Kubernetes version
-kubernetes_version: v1.8.3
+kubernetes_version: v1.9.2
 
 # Deploy monitoring
 deploy_monitoring: true
@@ -40,7 +39,7 @@ deploy_dashboard: true
 deploy_demo_app: true
 
 # Deploys k8s from fresh install
-full_clean: true
+full_clean: false
 
 # Deploy federation components
 deploy_federation: false
@@ -58,24 +57,24 @@ hpe3par_plugin: false
 docker_registry: 172.16.108.64
 docker_registry_port: 5000
 
-# Uncomment to override the default timeout of deployments. Timeout is equal to number of retries. Each retry is 10 seconds
+# Uncomment to override default timeout for deployments
 timeout: 120
 
 # URLs
-helm_binary: "https://storage.googleapis.com/kubernetes-helm/helm-v2.7.2-linux-amd64.tar.gz"
-demo_app: "https://github.com/microservices-demo/microservices-demo/blob/master/deploy/kubernetes/complete-demo.yaml?raw=true"
+demo_app: "https://raw.githubusercontent.com/microservices-demo/microservices-demo/master/deploy/kubernetes/complete-demo.yaml"
 kubefed_binary: "https://storage.googleapis.com/kubernetes-release/release/'{{ kubernetes_version }}'/kubernetes-client-linux-amd64.tar.gz"
 etcd_operator_repo: "https://github.com/coreos/etcd-operator.git"
 traefik_ingress_controller: "https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/traefik-rbac.yaml"
 traefik_ingress: "https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/traefik-ds.yaml"
 traefik_ui: "https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/ui.yaml"
-calico: "http://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
-flannel: "https://raw.githubusercontent.com/coreos/flannel/v0.9.0/Documentation/kube-flannel.yml"
+calico: "https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
+flannel: "https://raw.githubusercontent.com/coreos/flannel/v0.9.1/Documentation/kube-flannel.yml"
 weave: "https://cloud.weave.works/k8s/net?k8s-version='{{ kubernetes_version }}'"
 docker_repo_debian: "https://download.docker.com/linux/ubuntu xenial stable"
 docker_gpg: "https://download.docker.com/linux/ubuntu/gpg"
 docker_repo_centos: "https://download.docker.com/linux/centos/docker-ce.repo"
 kubernetes_yum_repo: "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64"
 kubernetes_yum_repo_gpg: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
-kubernetes_apt_repo: "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+kubernetes_apt_repo: "http://apt.kubernetes.io/ kubernetes-xenial main"
 kubernetes_apt_repo_gpg: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+get_helm_script_url: "https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get"

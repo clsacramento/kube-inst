@@ -54,22 +54,18 @@
    register: result
    changed_when: '"created" in result.stdout'
 
- - name: Download and unpack Helm client
+ - name: Download get_helm script
    when: deploy_helm == true
-   unarchive:
-     src: '{{ helm_binary }}'
-     dest: /tmp
-     remote_src: yes
+   get_url:
+     url: "{{ get_helm_script_url }}"
+     dest: "{{ ansible_env.HOME }}/get_helm.sh"
+     mode: 0700
    environment: '{{ proxy_env | default ({}) }}'
 
- - name: Copy Helm client to PATH
+ - name: Execute get_helm script
    when: deploy_helm == true
-   copy:
-     src: /tmp/linux-amd64/helm
-     dest: /usr/local/bin
-     remote_src: yes
-     mode: 0755
-   become: yes
+   shell: "{{ ansible_env.HOME }}/get_helm.sh"
+   environment: '{{ proxy_env | default ({}) }}'
   
  - name: Initialize Helm
    when: deploy_helm == true
