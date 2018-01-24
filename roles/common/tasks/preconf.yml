@@ -8,23 +8,13 @@
   become: yes
   when: yum_proxy is defined and ansible_os_family == "RedHat"
 
-# TODO: proxy for apt-get
-
-- name: yum clean
-  shell: yum clean all
-  become: yes
-  when: ansible_os_family == "RedHat"
-
-- name: apt-get clean metadata
-  shell: apt-get clean
-  when: ansible_os_family == "Debian"
-  become: yes
+#- name: apt-get clean metadata
+#  shell: apt-get clean
+#  when: ansible_os_family == "Debian"
+#  become: yes
 
 - name: yum upgrade
   shell: "yum upgrade -y"
-#  yum:
-#    name: "*"
-#    state: latest
   environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "RedHat"
