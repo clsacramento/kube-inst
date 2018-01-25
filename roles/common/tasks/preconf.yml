@@ -14,7 +14,7 @@
 #  become: yes
 
 - name: yum upgrade
-  shell: "yum upgrade -y"
+  yum: name=* state=latest update_cache=yes
   environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "RedHat"
