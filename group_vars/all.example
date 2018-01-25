@@ -13,6 +13,8 @@ proxy_env:
   NO_PROXY: '{{ no_proxy }}'
 #proxy that will be configured for yum
 yum_proxy: http://proxy.sdc.hp.com:8080/
+#proxy that will be configured for apt
+apt_proxy: http://proxy.sdc.hp.com:8080/
 
 # Choose CNI network
 # Possible values are calico, flannel, weave
@@ -75,6 +77,6 @@ docker_gpg: "https://download.docker.com/linux/ubuntu/gpg"
 docker_repo_centos: "https://download.docker.com/linux/centos/docker-ce.repo"
 kubernetes_yum_repo: "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64"
 kubernetes_yum_repo_gpg: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
-kubernetes_apt_repo: "http://apt.kubernetes.io/ kubernetes-xenial main"
+kubernetes_apt_repo: "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 kubernetes_apt_repo_gpg: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
 get_helm_script_url: "https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get"

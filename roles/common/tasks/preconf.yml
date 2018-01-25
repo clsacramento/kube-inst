@@ -8,6 +8,13 @@
   become: yes
   when: yum_proxy is defined and ansible_os_family == "RedHat"
 
+- name: configure apt proxy
+  template:
+    src: "./templates/apt_proxy.conf.j2"
+    dest: "/etc/apt/apt.conf"
+  become: yes
+  when: apt_proxy is defined and ansible_os_family == "Debian"
+
 #- name: apt-get clean metadata
 #  shell: apt-get clean
 #  when: ansible_os_family == "Debian"
