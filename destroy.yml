@@ -1,18 +1,33 @@
 ---
+- hosts: master
+
+  tasks:
+  - name: Drain nodes
+    shell: "for i in `kubectl get nodes --no-headers -o=custom-columns=NAME:.metadata.name | tail -n +2`; do kubectl drain $i --delete-local-data --force --ignore-daemonsets; done"
+
+  - name: Delete nodes
+    shell: "for i in `kubectl get nodes --no-headers -o=custom-columns=NAME:.metadata.name | tail -n +2`; do kubectl delete node $i; done"
+
+- hosts: master
+
+  tasks:
+  - name: Drain masters
+    shell: "for i in `kubectl get nodes --no-headers -o=custom-columns=NAME:.metadata.name`; do kubectl drain $i --delete-local-data --force --ignore-daemonsets; done"
+
+  - name: Delete masters
+    shell: "for i in `kubectl get nodes --no-headers -o=custom-columns=NAME:.metadata.name`; do kubectl delete node $i; done"
+
 - hosts: kube
 
   tasks:
-  
   - name: Verify if kubeadm exists
     shell: which kubeadm
     register: kubeadm_result
     failed_when: false
     changed_when: false
- 
-  - debug: var=kubeadm_result
 
-  - name: Kubeadm reset
-    shell: kubeadm reset
+  - name: Reset kubeadm
+    shell: "kubeadm reset"
     become: yes
     when: kubeadm_result.rc == 0
 
@@ -20,18 +35,43 @@
     file:
       state: absent
       path: "{{ ansible_env.HOME }}/.kube"
- 
-  - name: Verify if kubelet service exists
-    shell: "if systemctl status kubelet | grep -q loaded; then echo true; else echo false ; fi;"
-    register: kubelet_installed
-    changed_when: false
 
-  - name: Restart kubelet
-    systemd:
-      name: kubelet
-      state: restarted
+  - name: Verify if docker exists
+    shell: which docker
+    register: docker_result
+    failed_when: false
+    changed_when: false
+    when: full_clean is defined and full_clean
+
+  - name: Clean docker
+    shell: "{{ item }}"
+    with_items:
+    - "docker ps -q | xargs --no-run-if-empty docker kill"
+    - "docker system prune -a -f"
+    - "docker volume ls -q | xargs --no-run-if-empty docker volume rm"
     become: yes
-    when: kubelet_installed.stdout == "true"
+    when: docker_result.rc == 0 and full_clean is defined and full_clean
+
+  - name: Stop docker
+    systemd:
+      name: docker
+      state: stopped
+    when: docker_result.rc == 0 and full_clean is defined and full_clean
+    become: yes
+
+  - name: Clean /var/lib/docker
+    file:
+      state: absent
+      path: "/var/lib/docker/"
+    become: yes
+    when: full_clean is defined and full_clean
+
+  - name: Start docker
+    systemd:
+      name: docker
+      state: started
+    when: docker_result.rc == 0 and full_clean is defined and full_clean
+    become: yes
 
   - name: Reboot
     shell: sleep 2 && shutdown -r now
@@ -44,4 +84,3 @@
 
   - name: Wait for 10 seconds
     pause: seconds=10
-
