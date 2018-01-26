@@ -1,4 +1,20 @@
 ---
+
+- hosts: local
+  tasks:
+  - name: check no_proxy variable contents
+    shell: "cat group_vars/all | grep localhost,127.0.0.1 | cut -f 4- -d ','"
+    register: no_proxy_output
+
+  - name: get node ips
+    shell: "cat hosts | grep ansible_ssh_host | cut -f 2 -d '=' | tr '\n' ',' | sed 's/,$//'"
+    register: node_ips
+    when: no_proxy_output.stdout == ""
+
+  - name: configure no_proxy variable
+    shell: "sed -i '/^no_proxy:/ s/127.0.0.1/127.0.0.1,{{ node_ips.stdout }}/' './group_vars/all'"
+    when: no_proxy_output.stdout == ""
+
 - hosts: kube
   roles:
   - role: common
