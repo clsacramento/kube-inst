@@ -48,41 +48,31 @@
   when: full_clean is defined and full_clean
   become: yes
 
-#- name: install docker dependencies
-#  package:
-#    name: "{{ item }}"
-#    state: present
-#  with_items:
-#    - yum-utils 
-#    - device-mapper-persistent-data 
-#    - lvm2
-#  environment: '{{ proxy_env | default ({}) }}'
-#  become: yes
-#  when: ansible_os_family == "RedHat"
+- name: install docker dependencies
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - yum-utils 
+    - device-mapper-persistent-data 
+    - lvm2
+  environment: '{{ proxy_env | default ({}) }}'
+  become: yes
+  when: ansible_os_family == "RedHat"
 
-#- name: Setup yum repo for docker
-#  shell: "yum-config-manager --add-repo {{ docker_repo_centos }}"
-#  environment: '{{ proxy_env | default ({}) }}'
-#  when: ansible_os_family == "RedHat"
-#  become: yes
-#
-#- name: Enable docker repo
-#  shell: "yum-config-manager --enable docker-ce-edge"
-#  when: ansible_os_family == "RedHat"
-#  become: yes
-#
-#- name: Install Docker for RedHat
-#  yum:
-#    name: docker-ce
-#    state: latest
-#  environment: '{{ proxy_env | default ({}) }}'
-#  become: yes
-#  when: ansible_os_family == "RedHat"
+- name: Setup yum repo for docker
+  shell: "yum-config-manager --add-repo {{ docker_repo_centos }}"
+  environment: '{{ proxy_env | default ({}) }}'
+  when: ansible_os_family == "RedHat"
+  become: yes
+
+- name: Update cache
+  shell: "yum makecache fast -y"
+  become: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Install Docker for RedHat
-  yum:
-    name: docker
-    state: latest
+  shell: "yum install -y docker-ce-selinux-17.03.2.ce-1.el7.centos docker-ce-17.03.2.ce-1.el7.centos --setopt=obsoletes=0"
   environment: '{{ proxy_env | default ({}) }}'
   become: yes
   when: ansible_os_family == "RedHat"
@@ -100,30 +90,13 @@
   become: yes
   when: proxy is defined
 
-- name: Reload systemd
-  command: systemctl daemon-reload
-  become: yes
-
 - name: Restart docker
   systemd:
     name: docker
     state: restarted
     enabled: yes
+    daemon_reload: yes
   become: yes
-
-#- name: create /etc/docker/daemon.json
-#  template:
-#    src: ./templates/daemon.json.j2
-#    dest: /etc/docker/daemon.json
-#  become: yes
-#
-#- name: Change docker cgroup driver to systemd
-#  lineinfile:
-#    path: /etc/docker/daemon.json
-#    regexp: '^(.*)exec-opts(.*)$'
-#    line: '  "exec-opts": ["native.cgroupdriver=systemd"]'
-#  become: yes
-#  when: ansible_os_family == "RedHat"
 
 - name: Add Kubernetes repo for RedHat
   template:
@@ -185,15 +158,12 @@
   environment: '{{ proxy_env | default ({}) }}'
   become: yes
 
-- name: Reload systemd
-  command: systemctl daemon-reload
-  become: yes
-
 - name: Restart docker
   systemd:
     name: docker
     state: restarted
     enabled: yes
+    daemon_reload: yes
   become: yes
 
 - name: Restart kubelet
@@ -201,26 +171,5 @@
     state: started
     name: kubelet
     enabled: yes
+    daemon_reload: yes
   become: yes
-
-#- name: Read docker cgroup
-#  shell: "docker info 2>/dev/null | grep -i cgroup | cut -d ' ' -f 3"
-#  register: docker_cgroup
-#  become: yes
-#  changed_when: false
-
-#- name: Verify kubelet cgroup
-#  shell: cat /etc/systemd/system/kubelet.service.d/10-kubeadm.conf | grep -i "kubelet_cgroup_args=" | cut -d '=' -f 4 | sed 's/"$//'
-#  register: kubelet_cgroup
-#  changed_when: false
-
-#- name: Sync kubelet cgroup with docker cgroup
-#  lineinfile:
-#    path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-#    regexp: '^Environment="KUBELET_CGROUP_ARGS=--cgroup-driver=*'
-#    line: 'Environment="KUBELET_CGROUP_ARGS=--cgroup-driver={{ docker_cgroup.stdout }}"'
-#  when: docker_cgroup.stdout != kubelet_cgroup.stdout
-#  become: yes
-#  notify:
-#  - Reload systemd
-#  - Restart kubelet
